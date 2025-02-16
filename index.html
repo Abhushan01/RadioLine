@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#8200ff">
+    <title>RadioLine</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./styles/styles.css">
+    <link rel="manifest" href="./manifest/manifest.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <main>
+        <section class="controls">
+            <div id="playingStation"></div>
+            <div class="ctaBtns">
+                <button id="previous" type="button"><i class="fa-solid fa-backward-step"></i></button>
+                <button id="mainControl" type="button"><i class="fa-solid fa-play"></i></button>
+                <button id="next" type="button"><i class="fa-solid fa-forward-step"></i></button>
+            </div>
+            <div class="volCtrl">
+                <i class="fa-solid fa-volume-high" id="volIcon"></i>
+                <input type="range" name="volume" id="volume" class="slider">
+            </div>
+        </section>
+        <nav>
+            <div class="userCountry">
+                <div style="display:flex"><img id="countryFlag"></div>
+                <div><select id="countryList"></select></div>
+            </div>
+            <div class="brand" title="Created by Aditya with ❤️">
+                <span>RadioLine</span>
+                <sub>v.1.0</sub>
+            </div>
+            <div class="searchBar">
+                <input type="text" id="searchStations" placeholder="Search Radio Station">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+
+        </nav>
+        <section class="radioList">
+            <div class="radioListHeaders">
+                <div class="stationSerialNo">
+                    #
+                </div>
+                <div class="stationInfo">
+                    Title
+                </div>
+                <div class="stationLanguage">
+                    Language
+                </div>
+                <div class="stationClicks24Count" title="Click Counts in 24 hours">
+                    Clicks
+                </div>
+                <div class="stationVotes">
+                   Votes
+                </div>
+            </div>
+            <div id="radioListItems">
+            </div>
+            <!-- <ul id="radioListItems"></ul> -->
+        </section>
+
+
+
+      
+    </main>
+<!-- <img src="./assets/logo.png" alt=""> -->
+    <script src="./script/script.js"></script>
+</body>
+</html>
+
+
+
+<!-- clicktrend basis trending radio stations can be filtered out -->
