@@ -272,12 +272,19 @@ input:focus, select:focus{
 
 @media (max-width:500px) {
   body{
-    font-size: xx-small;
+    font-size: small;
   }
   .volCtrl{display:none}
   #countryList{width:5rem;font-size: xx-small;}
   .searchBar input{font-size: xx-small;}
   .brand{font-size: large;}
+
+  .radioListHeaders,.radioListItems{
+    grid-template-columns:1fr 2fr 1fr;
+}
+.stationVotes,.stationClicks24Count{display: none;}
+.stationTags,.stationLanguage{max-width: 5rem;}
+
 }
 
 /* width */
@@ -298,4 +305,11 @@ input:focus, select:focus{
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #b357f7; 
+}
+
+.stationName,.stationTags,.stationLanguage,.currentStationDetails>div{
+  white-space: nowrap;
+  max-width: 10rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

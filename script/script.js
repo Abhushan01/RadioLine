@@ -75,7 +75,7 @@ const renderStations=(stations)=>{
     return `
       <div class="radioListItems" id="radio${index}" onclick="playStation(${index},'${station.name.replace(/['"]/g, '\\$&')}')">
       <div class="stationSerialNo">${index+1}</div>
-      <div class="stationInfo">
+      <div class="stationInfo" title="${station.name}">
       <div class="stationText">
       <span class="stationName">${station.name}</span>
       <span class="stationTags">${station.tags}</span>
