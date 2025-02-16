@@ -107,7 +107,7 @@ const playStation=(stationIndex,stationName)=>{
       audioPlaying=true;
       mainControl.innerHTML=`<i class="fa-solid fa-pause"></i>`;
       playingStation.innerHTML=`
-      <div class="currentStationLogo"><img src="${currentStation?.favicon}" onerror="this.onerror=null; this.src='../assets/logo.png';" alt="Image"></div>
+      <div class="currentStationLogo"><img src="${currentStation?.favicon}" onerror="this.onerror=null; this.src='././assets/logo.png';" alt="Image"></div>
       <div class="currentStationDetails">
       <div class="currentStationName">${currentStation?.name}</div>
       <div class="currentStationLanguage">${currentStation?.language}</div>

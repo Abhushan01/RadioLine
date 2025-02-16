@@ -9,6 +9,7 @@
 body{
     background: #242424;
     color: darkgrey;
+    overflow-y: hidden;
     /* height: 100dvh; */
 }
 

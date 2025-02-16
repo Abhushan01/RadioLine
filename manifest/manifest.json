@@ -1,7 +1,7 @@
 {
     "name": "RadioLine",
     "short_name":"RadioLine",
-    "start_url":".",
+    "start_url":"../index.html",
     "background_color":"#8200ff",
     "theme_color":"#8200ff",
     "display":"standalone",
