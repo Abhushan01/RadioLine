@@ -1,5 +1,5 @@
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.register("././manifest/service-worker.js").then(
+  navigator.serviceWorker.register("./service-worker.js").then(
     (registration) => {
       console.log("Service worker registration succeeded:", registration);
     },
@@ -13,13 +13,23 @@ let listOfStations=[];
 let url='https://de1.api.radio-browser.info/json/stations/bycountrycodeexact/';
 const fetchStationList=(countryCode)=>{
   radioStations.innerHTML='<div style="width:100%;text-align: center;padding: 2rem;">Loading...</div>'
-  fetch(url+countryCode,{
-    method: "POST",
-    headers: {
-      "Content-Type": `application/x-www-form-urlencoded`
-    }
-  }).then((res)=>res.json()).then((data)=>{renderStations(data);listOfStations=data})
+  try {
+    fetch(url+countryCode,{
+      method: "POST",
+      headers: {
+        "Content-Type": `application/x-www-form-urlencoded`
+      }
+    }).then((res)=>res.json()).then((data)=>{renderStations(data);listOfStations=data}).catch((error)=>{
+      console.error(error);
+      radioStations.innerHTML=`<div style="width:100%;text-align: center;padding: 2rem;color:red">Failed to fetch Stations. Check network Connection, or try again later.</div>`
+    })
+    
+  } catch (error) {
+    console.log(error)
+  }
 }
+
+
 const countrySelectDropdown=document.getElementById('countryList');
 fetch('https://de1.api.radio-browser.info/json/countries',{
   method: "POST",
@@ -39,7 +49,14 @@ fetch('https://de1.api.radio-browser.info/json/countries',{
     countryFlag.title=`${randomCountry.name}`;
     countrySelectDropdown.value=`${randomCountry.iso_3166_1}`
   }
-  fetchStationList(randomCountry.iso_3166_1)})
+  fetchStationList(randomCountry.iso_3166_1)}).catch((error)=>{
+    countrySelectDropdown.innerHTML='<option value="fail">Unable to connect</option>';
+    countrySelectDropdown.value='fail';
+    countrySelectDropdown.disabled=true;
+    countryFlag.src='./assets/logo.png';
+    countryFlag.style.height="32px";
+    fetchStationList(countrySelectDropdown.value)
+  })
 
 let countryList=[]
 

@@ -1,6 +1,5 @@
-const test="radioProject";
-// ,"././styles/styles.css","././script/script.js"
-const assets=["/","./index.html",'./styles/styles.css','./script/scripts.js']
+const test="radioLine";
+const assets=["/","/index.html",'./styles/styles.css','./script/script.js']
 
 self.addEventListener("install",installEvent=>{
     installEvent.waitUntil(caches.open(test).then(cache=>{
