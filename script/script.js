@@ -21,7 +21,7 @@ const fetchStationList=(countryCode)=>{
   }).then((res)=>res.json()).then((data)=>{renderStations(data);listOfStations=data})
 }
 const countrySelectDropdown=document.getElementById('countryList');
-fetch('http://de1.api.radio-browser.info/json/countries',{
+fetch('https://de1.api.radio-browser.info/json/countries',{
   method: "POST",
   headers: {
     "Content-Type": `application/x-www-form-urlencoded`
