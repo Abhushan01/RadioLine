@@ -12,14 +12,21 @@ if('serviceWorker' in navigator){
 let listOfStations=[];
 let url='https://de1.api.radio-browser.info/json/stations/bycountrycodeexact/';
 const fetchStationList=(countryCode)=>{
-  radioStations.innerHTML='<div style="width:100%;text-align: center;padding: 2rem;">Loading...</div>'
+  radioStations.innerHTML=`  <div class="customLoader">
+        <div class="loader" style="left:1.5rem"></div>
+        <div class="loaderText">Fetching Stations<span class="dots"><span>.</span><span>.</span><span>.</span></div>
+    </div>`
   try {
     fetch(url+countryCode,{
       method: "POST",
       headers: {
         "Content-Type": `application/x-www-form-urlencoded`
       }
-    }).then((res)=>res.json()).then((data)=>{renderStations(data);listOfStations=data}).catch((error)=>{
+    }).then((res)=>res.json()).then((data)=>{
+      document.getElementById('loader').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'block';
+      renderStations(data);listOfStations=data
+    }).catch((error)=>{
       console.error(error);
       radioStations.innerHTML=`<div style="width:100%;text-align: center;padding: 2rem;color:red">Failed to fetch Stations. Check network Connection, or try again later.</div>`
     })
@@ -118,7 +125,7 @@ const playStation=(stationIndex,stationName)=>{
 
   audioPlaying=false;
   mainControl.innerHTML=`<i class="fa-solid fa-play"></i>`;
-  playingStation.innerHTML=`<div style="width:100%;text-align: center;">Fetching Stream...</div>`
+  playingStation.innerHTML=`<div style="width:100%;text-align: center;">Fetching Stream<span class="dots"><span>.</span><span>.</span><span>.</span></div>`
   try {
     audio.play().then((data)=>{
       audioPlaying=true;
