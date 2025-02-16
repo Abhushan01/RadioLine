@@ -1,5 +1,5 @@
 const test="radioProject";
-const assets=["/","../index.html","../styles/styles.css","../script/script.js"]
+const assets=["/","./index.html","././styles/styles.css","././script/script.js"]
 
 self.addEventListener("install",installEvent=>{
     installEvent.waitUntil(caches.open(test).then(cache=>{
