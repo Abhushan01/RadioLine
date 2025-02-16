@@ -9,7 +9,7 @@
 body{
     background: #242424;
     color: darkgrey;
-    overflow-y: hidden;
+    overflow-x: hidden;
     /* height: 100dvh; */
 }
 
@@ -278,4 +278,24 @@ input:focus, select:focus{
   #countryList{width:5rem;font-size: xx-small;}
   .searchBar input{font-size: xx-small;}
   .brand{font-size: large;}
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #d3a6ff; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #8200ff; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #b357f7; 
 }
