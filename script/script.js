@@ -10,8 +10,60 @@ if('serviceWorker' in navigator){
 }
 
 let listOfStations=[];
+const countryFlag=document.getElementsByClassName('countryFlag');
+const radioStations=document.getElementById('radioListItems');
+const sidebar=document.getElementById('sidebar');
+const renderSidebar=(country)=>{
+  sidebar.innerHTML=`
+  <div class="currentCountryDetails">
+        <div class="currentSelectedCountry">
+            <span class="countryName">${country.name}</span> 
+            <img class="countryFlag"  onerror="this.onerror=null; this.src='././assets/logo.png';" alt="Image" style="height: 32px;">
+        </div>
+        <div class="currentSelectedCountryRadioCounts">
+            <i class="fa-solid fa-radio"></i> 
+            <span>${country.stationcount.toLocaleString('en-IN')} stations</span>
+        </div>
+    </div>
+
+         <div class="list">
+        <div class="section-header">
+            Discover the World
+        </div>
+      <div class="searchBar searchCtry">
+                <input type="text" oninput="filterCountries(event)" placeholder="Search Country">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+        <div>
+            <ul id="countryList">
+
+            </ul>
+        </div>
+    </div>
+`
+renderCountryList(countryList)
+Array.from(countryFlag).forEach((el)=>{el.src=`https://flagsapi.com/${country.iso_3166_1.toUpperCase()}/flat/32.png`;el.title=`${country.name}`})
+}
+
+const renderCountryList=(countries)=>{
+  const countrySelectDropdown=document.getElementById('countryList');
+  countrySelectDropdown.innerHTML= countries?.length>0?countries.map((country)=>{
+  return `
+  <li onclick="fetchStationList('${country.iso_3166_1}')">${country.name}</li>
+  `
+  }).join(""):'<li>No Country Found</li>';
+}
+
+const filterCountries=(event)=>{
+  let filteredList=countryList.filter(country=>country.name.toLowerCase().replace(/\s+/g, '').includes(event.target.value.toLowerCase().replace(/\s+/g, '')));
+  renderCountryList(filteredList)
+}
+
 let url='https://de1.api.radio-browser.info/json/stations/bycountrycodeexact/';
-const fetchStationList=(countryCode)=>{
+const fetchStationList=(countryCode)=>{  
+  let countryInFocus=countryList[countryList.findIndex(x=>x.iso_3166_1==countryCode)];
+  renderSidebar(countryInFocus)
+  sidebar.style.left=window.innerWidth>500?'-30dvw':'-80dvw';
   radioStations.innerHTML=`  <div class="customLoader">
         <div class="loader" style="left:1.5rem"></div>
         <div class="loaderText">Fetching Stations<span class="dots"><span>.</span><span>.</span><span>.</span></div>
@@ -37,7 +89,8 @@ const fetchStationList=(countryCode)=>{
 }
 
 
-const countrySelectDropdown=document.getElementById('countryList');
+
+// const countrySelectDropdown=document.getElementById('countryList');
 fetch('https://de1.api.radio-browser.info/json/countries',{
   method: "POST",
   headers: {
@@ -46,36 +99,39 @@ fetch('https://de1.api.radio-browser.info/json/countries',{
 }).then((res)=>res.json()).then((data)=>{countryList=data;
   let randomCountry='';
   if(countryList?.length>0){
-    countrySelectDropdown.innerHTML= countryList.map((country)=>{
-      return `
-      <option value="${country.iso_3166_1}">${country.name}</option>
-      `
-    }).join("");
-    randomCountry=countryList[Math.floor(Math.random() * countryList?.length)+1]
-    countryFlag.src=`https://flagsapi.com/${randomCountry.iso_3166_1.toUpperCase()}/flat/32.png`;
-    countryFlag.title=`${randomCountry.name}`;
-    countrySelectDropdown.value=`${randomCountry.iso_3166_1}`
+      randomCountry=countryList[Math.floor(Math.random() * countryList?.length)+1];
+      renderSidebar(randomCountry);
   }
   fetchStationList(randomCountry.iso_3166_1)}).catch((error)=>{
-    countrySelectDropdown.innerHTML='<option value="fail">Unable to connect</option>';
-    countrySelectDropdown.value='fail';
-    countrySelectDropdown.disabled=true;
-    countryFlag.src='./assets/logo.png';
-    countryFlag.style.height="32px";
-    fetchStationList(countrySelectDropdown.value)
+    Array.from(countryFlag).forEach((el)=>{el.src=`./assets/logo.png`;el.style.height="32px"})
+    fetchStationList(null)
   })
 
 let countryList=[]
 
+let userCountry= document.getElementById('countryFlag')
+userCountry.addEventListener('click',()=>{
+  sidebar.style.left=0;
+})
 
-countrySelectDropdown.addEventListener('change',(event)=>{
-  if(event.isTrusted){
-    countryFlag.src=`https://flagsapi.com/${event.target.value.toUpperCase()}/flat/32.png`;
-    fetchStationList(event.target.value)
-  }
-});
+const hideSidebar=(event)=>{
+  if (!sidebar.contains(event.target) && !userCountry.contains(event.target)) {
+    sidebar.style.left = window.innerWidth>500?'-30dvw':'-80dvw';
+}
+}
 
-const radioStations=document.getElementById('radioListItems');
+document.addEventListener('click',(event)=>hideSidebar(event))
+
+document.addEventListener('touchstart', (event)=>hideSidebar(event));
+
+// countrySelectDropdown.addEventListener('change',(event)=>{
+//   if(event.isTrusted){
+//     countryFlag.src=`https://flagsapi.com/${event.target.value.toUpperCase()}/flat/32.png`;
+//     fetchStationList(event.target.value)
+//   }
+// });
+
+
 
 const renderStations=(stations)=>{
   const stationHTML = stations?.length>0?stations.map((station,index)=>{
@@ -155,7 +211,6 @@ const previousPlay=document.getElementById('previous');
 const nextPlay=document.getElementById('next');
 const volume= document.getElementById('volume');
 const volIcon=document.getElementById('volIcon');
-const countryFlag=document.getElementById('countryFlag');
 
 
 mainControl.addEventListener('click',()=>{
