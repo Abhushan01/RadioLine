@@ -10,6 +10,7 @@ if('serviceWorker' in navigator){
 }
 
 let listOfStations=[];
+let radioServer='';
 const countryFlag=document.getElementsByClassName('countryFlag');
 const radioStations=document.getElementById('radioListItems');
 const sidebar=document.getElementById('sidebar');
@@ -59,7 +60,6 @@ const filterCountries=(event)=>{
   renderCountryList(filteredList)
 }
 
-let url='https://de1.api.radio-browser.info/json/stations/bycountrycodeexact/';
 const fetchStationList=(countryCode)=>{  
   let countryInFocus=countryList[countryList.findIndex(x=>x.iso_3166_1==countryCode)];
   renderSidebar(countryInFocus)
@@ -69,7 +69,7 @@ const fetchStationList=(countryCode)=>{
         <div class="loaderText">Fetching Stations<span class="dots"><span>.</span><span>.</span><span>.</span></div>
     </div>`
   try {
-    fetch(url+countryCode,{
+    fetch(`https://${radioServer}/json/stations/bycountrycodeexact/${countryCode}`,{
       method: "POST",
       headers: {
         "Content-Type": `application/x-www-form-urlencoded`
@@ -80,6 +80,7 @@ const fetchStationList=(countryCode)=>{
       renderStations(data);listOfStations=data
     }).catch((error)=>{
       console.error(error);
+      document.getElementById('loader').style.display = 'none';
       radioStations.innerHTML=`<div style="width:100%;text-align: center;padding: 2rem;color:red">Failed to fetch Stations. Check network Connection, or try again later.</div>`
     })
     
@@ -91,21 +92,35 @@ const fetchStationList=(countryCode)=>{
 
 
 // const countrySelectDropdown=document.getElementById('countryList');
-fetch('https://de1.api.radio-browser.info/json/countries',{
-  method: "POST",
-  headers: {
-    "Content-Type": `application/x-www-form-urlencoded`
-  }
-}).then((res)=>res.json()).then((data)=>{countryList=data;
-  let randomCountry='';
-  if(countryList?.length>0){
-      randomCountry=countryList[Math.floor(Math.random() * countryList?.length)+1];
-      renderSidebar(randomCountry);
-  }
-  fetchStationList(randomCountry.iso_3166_1)}).catch((error)=>{
-    Array.from(countryFlag).forEach((el)=>{el.src=`./assets/logo.png`;el.style.height="32px"})
-    fetchStationList(null)
-  })
+
+
+const fetchCountryListData=()=>{
+  fetch(`https://${radioServer}/json/countries`,{
+    method: "GET",
+    headers: {
+      "Content-Type": `application/x-www-form-urlencoded`
+    }
+  }).then((res)=>res.json()).then((data)=>{countryList=data;
+    let randomCountry='';
+    if(countryList?.length>0){
+        randomCountry=countryList[Math.floor(Math.random() * countryList?.length)+1];
+        renderSidebar(randomCountry);
+    }
+    fetchStationList(randomCountry.iso_3166_1)}).catch((error)=>{
+      Array.from(countryFlag).forEach((el)=>{el.src=`./assets/logo.png`;el.style.height="32px"})
+      fetchStationList(null)
+    })
+}
+
+
+const fetchRadioServerList=()=>{
+  fetch('https://all.api.radio-browser.info/json/servers').then((res)=>res.json()).then((data)=>{
+    radioServer=data[Math.floor(Math.random()*(data.length))]?.name;
+    console.log('test',radioServer)
+    fetchCountryListData();
+  });
+}
+fetchRadioServerList();
 
 let countryList=[]
 
