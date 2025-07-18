@@ -6,7 +6,8 @@ function App() {
 
   return (
     <div>
-      <button className="bg-blue-500 text-red-100 font-bold py-2 px-4 rounded"
+      <button
+        className="bg-blue-500 text-red-100 font-bold py-2 px-4 rounded"
         onClick={() => {
           setCount(count => count + 1);
         }}

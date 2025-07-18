@@ -40,9 +40,19 @@
     "vite": "^7.0.4"
   },
   "lint-staged": {
-    "src/**/*.{js,jsx}": [
-      "npx prettier --write .",
-  "npx eslint --fix"
+    "*.js": [
+      "npx prettier --write",
+      "npx eslint --fix"
+    ],
+    "*.jsx": [
+      "npx prettier --write",
+      "npx eslint --fix"
+    ],
+    "*.json": [
+      "npx prettier --write"
+    ],
+    "*.css": [
+      "npx prettier --write"
     ]
   }
 }

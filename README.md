@@ -5,11 +5,11 @@ npm install --save-dev eslint prettier eslint-config-prettier  eslint-plugin-pre
 ```
 
 - Add below commands to package.json
-    ``` json
-    "lint": "eslint . --ext .jsx",
-    "lint:fix": "eslint . --ext .jsx --fix", //fix potential fixable issues
-    "cleanFormat": "npx prettier --write ." //fix prettier code
-    ```
+  ```json
+  "lint": "eslint . --ext .jsx",
+  "lint:fix": "eslint . --ext .jsx --fix", //fix potential fixable issues
+  "cleanFormat": "npx prettier --write ." //fix prettier code
+  ```
 
 ## Husky (Pre-commit hooks)
 
