@@ -31,7 +31,9 @@ Use below commands to implement
 
     npx lint-staged
   ```
+
 - run below commands
+
   ```bash
   npm pkg set scripts.prepare="husky install"
   npm run prepare
@@ -43,7 +45,7 @@ Use below commands to implement
   ```
 - add to package.json, below snippet
   ```json
-   "lint-staged": {
+     "lint-staged": {
     "*.js": [
       "npx prettier --write",
       "npx eslint --fix"
@@ -56,6 +58,9 @@ Use below commands to implement
       "npx prettier --write"
     ],
     "*.css": [
+      "npx prettier --write"
+    ],
+    "*.md":[
       "npx prettier --write"
     ]
   }
