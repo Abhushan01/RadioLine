@@ -25,11 +25,16 @@ Use below commands to implement
 - copy content from pre-commit file and paste into the file
 
   ```bash
-  #!/bin/sh
-  . "$(dirname "$0")/_/husky.sh"
+    #!/usr/bin/env sh
 
-  npx lint-staged
+    echo "▶ Running pre-commit hook..."
 
+    npx lint-staged
+  ```
+- run below commands
+  ```bash
+  npm pkg set scripts.prepare="husky install"
+  npm run prepare
   ```
 
 - To make this file executable, run this
@@ -38,10 +43,20 @@ Use below commands to implement
   ```
 - add to package.json, below snippet
   ```json
-  "lint-staged": {
-  "src/**/*.{js,jsx}": [
-      "eslint --fix",
-      "prettier --write"
-  ]
+   "lint-staged": {
+    "*.js": [
+      "npx prettier --write",
+      "npx eslint --fix"
+    ],
+    "*.jsx": [
+      "npx prettier --write",
+      "npx eslint --fix"
+    ],
+    "*.json": [
+      "npx prettier --write"
+    ],
+    "*.css": [
+      "npx prettier --write"
+    ]
   }
   ```
