@@ -1,0 +1,11 @@
+/* @imp */
+li > button {
+  padding: 0.5rem 1rem;
+  text-transform: uppercase;
+}
+
+li:hover {
+  color: var(--color-primary);
+  background: linear-gradient(90deg, hsla(339, 87%, 27%, 0.592) 0%, hsla(340, 19%, 15%, 0) 75%);
+  border-left: 3px solid var(--color-primary);
+}
