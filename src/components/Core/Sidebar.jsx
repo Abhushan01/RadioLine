@@ -1,5 +1,5 @@
-import { SidebarLinks } from '../constants/SidebarLinks';
-import '../styles/Sidebar.css';
+import { SidebarLinks } from '../../constants/SidebarLinks';
+import '../../styles/Sidebar.css';
 
 const Sidebar = () => {
   const { mainLinks, userLibLinks } = SidebarLinks[0]; // assuming only one object in array

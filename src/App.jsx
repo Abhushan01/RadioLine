@@ -1,9 +1,9 @@
 import './App.css';
-import CurrentStation from './components/CurrentStation';
-import Footer from './components/Footer';
-import Hero from './components/Hero';
-import Navbar from './components/Navbar';
-import Sidebar from './components/Sidebar';
+import Footer from './components/Core/Footer';
+import Hero from './components/Core/Hero';
+import Navbar from './components/Core/Navbar';
+import Sidebar from './components/Core/Sidebar';
+import CurrentStation from './components/Core/CurrentStation';
 
 function App() {
   return (

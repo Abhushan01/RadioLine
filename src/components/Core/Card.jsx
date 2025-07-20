@@ -1,5 +1,5 @@
 import { PlayIcon } from '@heroicons/react/24/outline';
-import '../styles/Hero.css';
+import '../../styles/Hero.css';
 
 const Card = () => (
   <div>

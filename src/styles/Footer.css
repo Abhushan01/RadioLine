@@ -26,3 +26,7 @@
   border: none;
   background: transparent;
 }
+
+footer Button {
+  padding: 0;
+}

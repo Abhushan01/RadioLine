@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { useRef } from 'react';
 import Card from './Card';
+import CardPlaceHolder from '../Placeholder/CardPlaceHolder';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 
 const HeroContent = ({ title }) => {
@@ -15,6 +16,8 @@ const HeroContent = ({ title }) => {
       behavior: 'smooth',
     });
   };
+
+  const showCards = true;
 
   return (
     <section className="flex flex-col gap-3 relative">
@@ -47,7 +50,7 @@ const HeroContent = ({ title }) => {
       >
         {[...Array(10)].map((_, idx) => (
           <div key={idx} className="snap-start shrink-0">
-            <Card />
+            {showCards ? <Card /> : <CardPlaceHolder />}
           </div>
         ))}
       </div>
