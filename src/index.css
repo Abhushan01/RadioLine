@@ -4,6 +4,7 @@
 @import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/preflight.css' layer(base);
 @import 'tailwindcss/utilities.css' layer(utilities);
+
 /* === Base Reset === */
 :root {
   --font-body: 'Oswald', sans-serif;
@@ -73,8 +74,6 @@
   /* Base Backgrounds */
   --color-bg-1: #0c0f0a;
   --color-bg-2: #2a0814;
-  --color-surface: #121510;
-  --color-section-bg: #1a1d18;
   --color-border: #2a2d28;
   --color-navigation-section: hsla(96, 20%, 5%, 45%);
   --color-navigation-surface: hsla(343, 52%, 21%, 97%);
@@ -92,76 +91,43 @@
 
   /* Accent (for outline, link highlights, etc.) */
   --color-accent: #fbff12;
-  --color-accent-hover: rgba(251, 255, 18, 0.1);
-  --color-accent-active: rgba(251, 255, 18, 0.2);
-  --color-accent-disabled: #3b3e38;
+  --color-accent-hover: #b0b30b;
 
   /* Secondary Button */
   --color-secondary-hover: #232722;
   --color-secondary-active: #1d201b;
-
-  /* Links */
-  --color-link: #fbff12;
-  --color-link-hover: #ffffff;
-  --color-link-visited: #d8db10;
-
-  /* Alerts */
-  --color-success-bg: #1f2e1f;
-  --color-success-border: #30c060;
-
-  --color-error-bg: #2e1f1f;
-  --color-error-border: #ff206e;
-
-  --color-warning-bg: #2e2e1f;
-  --color-warning-border: #fbff12;
-
-  --color-info-bg: #1f2e2e;
-  --color-info-border: #2096ff;
-
-  /* Controls */
-  --color-toggle-on: #fbff12;
-  --color-toggle-off: #3b3e38;
-  --color-toggle-thumb: #ffffff;
-
-  --color-slider-track: #fbff12;
-  --color-slider-bg: #2a2d28;
 }
 
 /* === Base Styles === */
 html,
 body {
   height: 100%;
-}
-body {
-  font-family: var(--font-body);
-  color: var(--color-text-primary);
-  transition: var(--transition);
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-/* Dark theme override */
-html[data-theme='dark'] body {
-  background: linear-gradient(180deg, var(--color-bg-2) 0%, var(--color-bg-1) 75%);
-  background-image: url('/bg-dark.svg');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-/* Light theme override */
-body[data-theme='light'] {
-  background: linear-gradient(180deg, var(--color-bg-2) 0%, var(--color-bg-1) 75%);
-}
-
-a {
-  color: var(--color-primary);
-  text-decoration: none;
+  font-family: var(--font-body);
+  color: var(--color-text-primary);
   transition: var(--transition);
 }
-a:hover {
-  color: var(--color-primary-hover);
+
+/* === Light Theme Background === */
+html[data-theme='light'],
+body[data-theme='light'] {
+  background: linear-gradient(180deg, var(--color-bg-2) 0%, var(--color-bg-1) 75%);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* === Dark Theme Background with Gradient + Custom Image === */
+html[data-theme='dark'],
+body[data-theme='dark'] {
+  background: url('/bg-dark.svg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
 }
 
 /* === Buttons === */
@@ -171,63 +137,6 @@ button {
   transition: var(--transition);
   border: none;
   padding: 0.6rem 1.2rem;
-  border-radius: 4px;
-  font-size: 1rem;
-}
-
-/* Primary Button */
-.btn-primary {
-  background-color: var(--color-primary);
-  color: #ffffff;
-}
-.btn-primary:hover {
-  background-color: var(--color-primary-hover);
-}
-.btn-primary:active {
-  background-color: var(--color-primary-active);
-}
-.btn-primary:disabled {
-  background-color: var(--color-primary-disabled);
-  cursor: not-allowed;
-}
-
-/* Secondary Button */
-.btn-secondary {
-  background-color: var(--color-section-bg);
-  color: var(--color-text-primary);
-  border: 1.5px solid var(--color-border);
-  transition: var(--transition);
-}
-.btn-secondary:hover {
-  background-color: var(--color-secondary-hover);
-  cursor: pointer;
-}
-.btn-secondary:active {
-  background-color: var(--color-secondary-active);
-}
-.btn-secondary:disabled {
-  background-color: var(--color-primary-disabled);
-  color: var(--color-text-secondary);
-  border-color: var(--color-border);
-  cursor: not-allowed;
-}
-
-/* Outline Button */
-.btn-outline {
-  background: transparent;
-  border: 1px solid var(--color-accent);
-  color: var(--color-accent);
-}
-.btn-outline:hover {
-  background-color: var(--color-accent-hover);
-}
-.btn-outline:active {
-  background-color: var(--color-accent-active);
-}
-.btn-outline:disabled {
-  color: var(--color-accent-disabled);
-  border-color: var(--color-accent-disabled);
-  cursor: not-allowed;
 }
 
 /* === Inputs === */
@@ -239,82 +148,4 @@ textarea::placeholder {
 input:focus,
 select:focus {
   outline: none;
-}
-
-/* === Cards / Panels === */
-.card {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-/* === Alerts === */
-.alert {
-  padding: 1rem;
-  border-left: 4px solid;
-  margin-bottom: 1rem;
-  border-radius: 4px;
-}
-.alert-success {
-  background-color: var(--color-success-bg);
-  border-color: var(--color-success-border);
-}
-.alert-error {
-  background-color: var(--color-error-bg);
-  border-color: var(--color-error-border);
-}
-.alert-warning {
-  background-color: var(--color-warning-bg);
-  border-color: var(--color-warning-border);
-}
-.alert-info {
-  background-color: var(--color-info-bg);
-  border-color: var(--color-info-border);
-}
-
-/* === Toggle / Switches === */
-.toggle {
-  width: 50px;
-  height: 24px;
-  border-radius: 24px;
-  background-color: var(--color-toggle-off);
-  position: relative;
-  transition: var(--transition);
-}
-.toggle::before {
-  content: '';
-  width: 20px;
-  height: 20px;
-  background-color: var(--color-toggle-thumb);
-  border-radius: 50%;
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  transition: var(--transition);
-}
-.toggle.on {
-  background-color: var(--color-toggle-on);
-}
-.toggle.on::before {
-  left: 28px;
-}
-
-/* === Sliders === */
-.slider {
-  appearance: none;
-  width: 100%;
-  height: 4px;
-  background: var(--color-slider-bg);
-  outline: none;
-  border-radius: 2px;
-}
-.slider::-webkit-slider-thumb {
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--color-slider-track);
-  cursor: pointer;
 }

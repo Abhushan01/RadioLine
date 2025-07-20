@@ -1,0 +1,44 @@
+.hero-graphics {
+  position: fixed;
+  right: -16px;
+  top: -50px;
+}
+
+.hero-graphics > img {
+  height: 300px;
+}
+
+.glow-wrapper {
+  position: relative;
+}
+
+.glow-wrapper::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  right: -6px;
+  bottom: -6px;
+  background: linear-gradient(45deg, #280612, #0c0f0a, #6f022888);
+  background-size: 400% 400%;
+  filter: blur(12px);
+  z-index: 0;
+  animation: borderGlow 6s ease infinite;
+}
+
+.glow-block {
+  position: relative;
+  z-index: 1; /* Ensure content is above glow */
+}
+
+@keyframes borderGlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
