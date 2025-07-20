@@ -131,12 +131,14 @@ body[data-theme='dark'] {
 }
 
 /* === Buttons === */
-button {
-  font-family: var(--font-body);
-  cursor: pointer;
-  transition: var(--transition);
-  border: none;
-  padding: 0.6rem 1.2rem;
+@layer base {
+  button {
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: var(--transition);
+    border: none;
+    padding: 0.6rem 1.2rem; /* now sits in the base layer */
+  }
 }
 
 /* === Inputs === */

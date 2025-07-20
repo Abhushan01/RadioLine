@@ -1,3 +1,4 @@
+// src/App.jsx
 import './App.css';
 import Footer from './components/Core/Footer';
 import Hero from './components/Core/Hero';
@@ -7,21 +8,34 @@ import CurrentStation from './components/Core/CurrentStation';
 
 function App() {
   return (
-    <div>
+    <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="pt-25 mx-6">
-        <div className="grid grid-cols-5 gap-4">
-          <div>
+
+      <main className="flex-1 pt-[2.7rem] px-4 md:pt-[5.5rem] lg:pt-[6.1rem] md:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-5 md:gap-4">
+          {/* Desktop sidebar */}
+          <div className="hidden md:block">
             <Sidebar />
           </div>
-          <div className="col-span-3">
+
+          {/* Main content */}
+          <section className="md:col-span-3">
             <Hero />
-          </div>
-          <div>
+          </section>
+
+          {/* Desktop current station */}
+          <div className="hidden md:block">
             <CurrentStation />
           </div>
         </div>
       </main>
+
+      {/* Mobile: Sidebar icons fixed at very bottom */}
+      <div className="fixed bottom-0 left-0 w-full block md:hidden z-50">
+        <Sidebar mobile />
+      </div>
+
+      {/* Footer: sits above mobile sidebar; on desktop, fixed at bottom-0 */}
       <Footer />
     </div>
   );

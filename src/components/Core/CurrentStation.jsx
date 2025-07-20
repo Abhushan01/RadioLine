@@ -2,7 +2,11 @@ import { GlobeAltIcon, LanguageIcon, MusicalNoteIcon, StarIcon } from '@heroicon
 import { CursorArrowRaysIcon } from '@heroicons/react/24/solid';
 
 const CurrentStation = () => (
-  <aside className="bg-[var(--color-navigation-section)] backdrop-blur-xl p-4 rounded-sm fixed w-65 z-50 h-full">
+  <aside
+    className="bg-[var(--color-navigation-section)] backdrop-blur-xl p-4 rounded-sm fixed 
+        lg:w-66
+        md:w-35 z-50 h-full"
+  >
     <div className="">
       <p className="text-md mb-2 font-semibold">Lorem1233</p>
       <img src="/fallback-image.svg" alt="" className="rounded-md" />

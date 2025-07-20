@@ -1,15 +1,10 @@
-.hero-graphics {
-  position: fixed;
-  right: -16px;
-  top: -50px;
-}
+/* src/styles/Hero.css */
 
-.hero-graphics > img {
-  height: 300px;
-}
-
+/* ── Glow Wrapper ───────────────────────────────────────────────────────────── */
+/* Container for the hero section that emits a soft animated glow border */
 .glow-wrapper {
   position: relative;
+  overflow: visible; /* allow child elements (the radio graphic) to overflow */
 }
 
 .glow-wrapper::before {
@@ -26,11 +21,14 @@
   animation: borderGlow 6s ease infinite;
 }
 
+/* ── Glow Block ─────────────────────────────────────────────────────────────── */
+/* Ensures the hero content sits above the animated glow */
 .glow-block {
   position: relative;
-  z-index: 1; /* Ensure content is above glow */
+  z-index: 1;
 }
 
+/* ── Border Glow Animation ─────────────────────────────────────────────────── */
 @keyframes borderGlow {
   0% {
     background-position: 0% 50%;
@@ -41,4 +39,14 @@
   100% {
     background-position: 0% 50%;
   }
+}
+
+/* Hide scrollbars on all major browsers */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
