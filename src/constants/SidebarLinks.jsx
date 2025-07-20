@@ -11,29 +11,29 @@ export const SidebarLinks = [
     mainLinks: [
       {
         label: 'Home',
-        targetLink: '#',
+        targetLink: '/',
         icon: HomeIcon,
       },
       {
         label: 'Discover',
-        targetLink: '#',
+        targetLink: '/discover',
         icon: SparklesIcon,
       },
       {
         label: 'Genres',
-        targetLink: '#',
+        targetLink: '/genres',
         icon: MusicalNoteIcon,
       },
     ],
     userLibLinks: [
       {
         label: 'Favorites',
-        targetLink: '#',
+        targetLink: '/favorites',
         icon: HeartIcon,
       },
       {
         label: 'Recently Played',
-        targetLink: '#',
+        targetLink: '/recents',
         icon: CalendarDateRangeIcon,
       },
     ],

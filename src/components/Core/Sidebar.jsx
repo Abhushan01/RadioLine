@@ -1,4 +1,5 @@
 // src/components/Core/Sidebar.jsx
+import { NavLink } from 'react-router-dom';
 import { SidebarLinks } from '../../constants/SidebarLinks';
 import '../../styles/Sidebar.css';
 
@@ -19,10 +20,15 @@ const Sidebar = ({ mobile = false }) => {
         "
       >
         <nav className="flex justify-around items-center">
-          {allLinks.map(({ icon: Icon }, idx) => (
-            <button key={idx} className="p-2 bg-transparent">
-              <Icon className="w-6 h-6 text-[var(--color-text-primary)]" />
-            </button>
+          {allLinks.map(({ icon: Icon, targetLink }, idx) => (
+            <NavLink
+              to={targetLink}
+              className={({ isActive }) => `${isActive ? 'active-mobile' : ''}`}
+            >
+              <button key={idx} className="p-2 bg-transparent">
+                <Icon className="w-6 h-6 " />
+              </button>
+            </NavLink>
           ))}
         </nav>
       </aside>
@@ -49,12 +55,14 @@ const Sidebar = ({ mobile = false }) => {
       <nav className="space-y-6 text-[var(--color-text-primary)]">
         {/* Main Links */}
         <ul className="space-y-3">
-          {mainLinks.map(({ label, icon: Icon }, idx) => (
+          {mainLinks.map(({ label, icon: Icon, targetLink }, idx) => (
             <li key={idx} className="flex items-center gap-3">
-              <button className="bg-transparent flex lg:gap-3 md:gap-2 items-center w-100">
-                <Icon className="w-5 h-5" />
-                {label}
-              </button>
+              <NavLink to={targetLink} className={'w-full'}>
+                <button className="flex lg:gap-3 md:gap-2 items-center w-full">
+                  <Icon className="w-5 h-5" />
+                  <div className="text-left uppercase">{label}</div>
+                </button>
+              </NavLink>
             </li>
           ))}
         </ul>
@@ -66,12 +74,14 @@ const Sidebar = ({ mobile = false }) => {
 
         {/* User Library Links */}
         <ul className="space-y-3">
-          {userLibLinks.map(({ label, icon: Icon }, idx) => (
+          {userLibLinks.map(({ label, icon: Icon, targetLink }, idx) => (
             <li key={idx} className="flex items-center gap-3">
-              <button className="bg-transparent flex lg:gap-3 md:gap-2 items-center w-100">
-                <Icon className="w-5 h-5" />
-                <div className="text-left">{label}</div>
-              </button>
+              <NavLink to={targetLink} className={'w-full'}>
+                <button className="bg-transparent flex lg:gap-3 md:gap-2 items-center w-full">
+                  <Icon className="w-5 h-5" />
+                  <div className="text-left uppercase">{label}</div>
+                </button>
+              </NavLink>
             </li>
           ))}
         </ul>

@@ -5,6 +5,9 @@ import Hero from './components/Core/Hero';
 import Navbar from './components/Core/Navbar';
 import Sidebar from './components/Core/Sidebar';
 import CurrentStation from './components/Core/CurrentStation';
+import { Route, Routes } from 'react-router-dom';
+import DiscoverGlobe from './components/Features/DiscoverGlobe';
+import Search from './components/Features/Search';
 
 function App() {
   return (
@@ -19,8 +22,12 @@ function App() {
           </div>
 
           {/* Main content */}
-          <section className="md:col-span-3">
-            <Hero />
+          <section className="md:col-span-3 mt-9">
+            <Routes>
+              <Route path="/" element={<Hero />} />
+              <Route path="/discover" element={<DiscoverGlobe />} />
+              <Route path="/search" element={<Search />} />
+            </Routes>
           </section>
 
           {/* Desktop current station */}

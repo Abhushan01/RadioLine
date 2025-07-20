@@ -123,7 +123,8 @@ body[data-theme='light'] {
 /* === Dark Theme Background with Gradient + Custom Image === */
 html[data-theme='dark'],
 body[data-theme='dark'] {
-  background: url('/bg-dark.svg');
+  background-color: #200a10; /* NEW LINE */
+  background-image: url('/bg-dark.svg');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -150,4 +151,41 @@ textarea::placeholder {
 input:focus,
 select:focus {
   outline: none;
+}
+
+/* Define your scrollbar color variables under the dark theme */
+:root[data-theme='dark'] {
+  --scrollbar-bg: #0c0f0a; /* track background */
+  --scrollbar-thumb: #ff206e; /* thumb default */
+  --scrollbar-hover: #6a6a6a; /* thumb on hover */
+}
+
+/* Firefox */
+:root[data-theme='dark'] {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-bg);
+}
+
+/* WebKit browsers */
+:root[data-theme='dark'] ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background-color: var(--scrollbar-bg);
+}
+
+:root[data-theme='dark'] ::-webkit-scrollbar-track {
+  background-color: var(--scrollbar-bg);
+}
+
+:root[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+
+:root[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-hover);
+}
+
+html {
+  scrollbar-gutter: stable;
 }

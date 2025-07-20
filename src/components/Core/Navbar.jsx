@@ -1,6 +1,7 @@
 // src/components/Core/Navbar.jsx
 import { useState, useEffect } from 'react';
 import { MagnifyingGlassIcon, MoonIcon, SunIcon } from '@heroicons/react/24/outline';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
@@ -11,13 +12,9 @@ const Navbar = () => {
   }, [theme]);
 
   const toggleTheme = () => setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
-
+  const navigate = useNavigate();
   const handleMobileSearch = () => {
-    const query = prompt('Search Radio Station');
-    if (query) {
-      console.log('Searching for:', query);
-      // integrate real search logic here
-    }
+    navigate('/search');
   };
 
   return (
