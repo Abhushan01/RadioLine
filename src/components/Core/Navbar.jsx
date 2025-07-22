@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { MagnifyingGlassIcon, MoonIcon, SunIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 
-const Navbar = () => {
+const Navbar = ({ radioStationList }) => {
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
 
   useEffect(() => {
@@ -51,7 +51,13 @@ const Navbar = () => {
             type="text"
             placeholder="Search Radio Station"
             className="flex-1 bg-transparent outline-none"
+            list="stations"
           />
+          <datalist id="stations">
+            {radioStationList.map((c, index) => (
+              <option key={index} value={c.name} />
+            ))}
+          </datalist>
         </div>
 
         <div className="flex items-center gap-2">

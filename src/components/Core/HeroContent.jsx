@@ -5,16 +5,26 @@ import Card from './Card';
 import CardPlaceHolder from '../Placeholder/CardPlaceHolder';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 
-const HeroContent = ({ title }) => {
+const HeroContent = ({ loading, contentMatter: { title, radioList } }) => {
   const carouselRef = useRef(null);
-  const showCards = true;
-
+  console.log('check', loading);
   const scroll = dir => {
     const c = carouselRef.current;
     if (!c) return;
     const amt = c.offsetWidth / 2; // two cards at a time
     c.scrollBy({ left: dir === 'left' ? -amt : amt, behavior: 'smooth' });
   };
+
+  if (radioList.length === 0) {
+    return (
+      <section className="relative flex flex-col gap-3 pb-2">
+        <div className="section-header flex items-center justify-between">
+          <p className="font-semibold text-2xl sm:text-4xl">{title}</p>
+        </div>
+        <p className="text-sm text-[var(--color-text-secondary)]">No Radio Stations Found.</p>
+      </section>
+    );
+  }
 
   return (
     <section className="relative flex flex-col gap-3">
@@ -53,15 +63,28 @@ const HeroContent = ({ title }) => {
         "
         style={{ touchAction: 'pan-x' }}
       >
-        {[...Array(10)].map((_, i) => (
-          <div key={i} className="snap-start shrink-0 w-full">
-            {showCards ? <Card /> : <CardPlaceHolder />}
-          </div>
-        ))}
+        {loading ? (
+          <>
+            {[...Array(10)].map((_, i) => (
+              <div key={i} className="snap-start shrink-0 w-full">
+                <CardPlaceHolder />
+              </div>
+            ))}
+          </>
+        ) : (
+          <>
+            {radioList &&
+              radioList.map(station => (
+                <div key={station.stationuuid} className="snap-start shrink-0 w-full">
+                  <Card stationInfo={station} />
+                </div>
+              ))}
+          </>
+        )}
       </div>
     </section>
   );
 };
 
-HeroContent.propTypes = { title: PropTypes.string.isRequired };
+HeroContent.propTypes = { title: PropTypes.string.isRequired, loading: PropTypes.bool.isRequired };
 export default HeroContent;

@@ -2,7 +2,7 @@
 import { RadioIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 
-const HeroSection = () => {
+const HeroSection = ({ preferedCountry }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -28,30 +28,45 @@ const HeroSection = () => {
           <div className="countryInfo flex items-center gap-3 md:gap-4">
             {/* Title */}
             <div
-              className="
-              countryName
-              text-5xl md:text-7xl lg:text-9xl
-              bg-gradient-to-b from-[#FF206E] to-[#1a050c]
-              bg-clip-text text-transparent
-            "
+              className={
+                preferedCountry
+                  ? 'countryName text-5xl md:text-7xl lg:text-9xlbg-gradient-to-b from-[#FF206E] to-[#1a050c] bg-clip-text text-transparent'
+                  : 'text-5xl lg:text-7xl'
+              }
             >
-              INDIA
+              {preferedCountry ?? (
+                <>
+                  Choose a Country
+                  <br />
+                  <span className="text-sm">
+                    Click below to tune in to Radio Stations across the Globe.
+                  </span>
+                </>
+              )}
             </div>
             {/* Flag */}
-            <div className="countryFlag w-8 h-8 md:w-12 md:h-12 lg:w-16 lg:h-16">
-              <img
-                src="https://flagsapi.com/IN/flat/64.png"
-                alt="India Flag"
-                className="w-full h-full object-contain"
-              />
-            </div>
+            {preferedCountry ? (
+              <div className="countryFlag w-8 h-8 md:w-12 md:h-12 lg:w-16 lg:h-16">
+                <img
+                  src="https://flagsapi.com/IN/flat/64.png"
+                  alt="India Flag"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            ) : (
+              <></>
+            )}
           </div>
 
           {/* Stations Count */}
-          <div className="radioStations text-[var(--color-text-secondary)] flex items-center gap-2 md:gap-3">
-            <RadioIcon className="h-5 md:h-6" />
-            <p className="text-sm md:text-base">468 Stations</p>
-          </div>
+          {preferedCountry ? (
+            <div className="radioStations text-[var(--color-text-secondary)] flex items-center gap-2 md:gap-3">
+              <RadioIcon className="h-5 md:h-6" />
+              <p className="text-sm md:text-base">468 Stations</p>
+            </div>
+          ) : (
+            <></>
+          )}
 
           {/* CTA Button */}
           <button

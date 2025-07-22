@@ -12,7 +12,7 @@ import {
   PlayIcon,
 } from '@heroicons/react/24/outline';
 
-const Footer = () => {
+const Footer = ({ loading }) => {
   const [volume, setVolume] = useState(0.5);
   const handleVolumeChange = e => {
     const newVolume = parseFloat(e.target.value);
@@ -21,14 +21,12 @@ const Footer = () => {
     if (audio) audio.volume = newVolume;
   };
 
-  const isLoading = false;
-
   return (
     <footer className="fixed left-0 w-full z-50 bottom-10 md:bottom-0">
       <div className="bg-[var(--color-navigation-section)] backdrop-blur-xl rounded-sm flex justify-between items-center mx-2 md:mx-6 mb-6">
         {/* Station Info */}
         <div className="radioStation flex items-center gap-3 cursor-default">
-          {isLoading ? (
+          {loading ? (
             <>
               <div className="h-16 w-16 bg-pink-950 rounded animate-pulse" />
               <div className="flex flex-col gap-2">
@@ -57,26 +55,26 @@ const Footer = () => {
         <div className="flex items-center gap-4">
           <button
             className="hidden md:inline bg-transparent hover:text-[var(--color-text-primary)]"
-            disabled={isLoading}
+            disabled={loading}
           >
             <BackwardIcon className="h-6" />
           </button>
 
           <button
             className="bg-transparent hover:text-[var(--color-primary)] text-[var(--color-bg-1)]"
-            disabled={isLoading}
+            disabled={loading}
           >
             <PlayIcon className="h-12 bg-[var(--color-text-primary)] rounded-full p-2" />
           </button>
 
           <button
             className="hidden md:inline bg-transparent hover:text-[var(--color-text-primary)]"
-            disabled={isLoading}
+            disabled={loading}
           >
             <ForwardIcon className="h-6" />
           </button>
 
-          <button className="bg-transparent hover:text-[var(--color-primary)]" disabled={isLoading}>
+          <button className="bg-transparent hover:text-[var(--color-primary)]" disabled={loading}>
             <HeartIcon className="h-6" />
           </button>
         </div>
@@ -85,13 +83,13 @@ const Footer = () => {
         <div className="hidden md:flex items-center gap-3 text-[var(--color-text-secondary)]">
           <button
             className="bg-transparent hover:text-[var(--color-text-primary)]"
-            disabled={isLoading}
+            disabled={loading}
           >
             <ArrowsRightLeftIcon className="h-6" />
           </button>
           <button
             className="bg-transparent hover:text-[var(--color-text-primary)]"
-            disabled={isLoading}
+            disabled={loading}
           >
             <SpeakerWaveIcon className="h-6" />
             <SpeakerXMarkIcon className="hidden h-6" />
@@ -105,11 +103,11 @@ const Footer = () => {
             onChange={handleVolumeChange}
             className="volume-range no-thumb"
             style={{ backgroundSize: `${volume * 100}% 100%` }}
-            disabled={isLoading}
+            disabled={loading}
           />
           <button
             className="bg-transparent hover:text-[var(--color-text-primary)]"
-            disabled={isLoading}
+            disabled={loading}
           >
             <ArrowsPointingOutIcon className="h-6" />
           </button>
