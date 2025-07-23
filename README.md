@@ -44,6 +44,7 @@ Use below commands to implement
   chmod +x .husky/pre-commit
   ```
 - add to package.json, below snippet
+
   ```json
      "lint-staged": {
     "*.js": [
@@ -65,3 +66,5 @@ Use below commands to implement
     ]
   }
   ```
+
+- hls.js package is required for implementing live streaming urls, like m3u8 files.

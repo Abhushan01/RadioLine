@@ -1,55 +1,80 @@
-// src/components/Core/HeroContent.jsx
 import PropTypes from 'prop-types';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import Card from './Card';
 import CardPlaceHolder from '../Placeholder/CardPlaceHolder';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 
-const HeroContent = ({ loading, contentMatter: { title, radioList } }) => {
+const HeroContent = ({ loading, contentMatter }) => {
+  const { title = 'Untitled', radioList = [] } = contentMatter || {};
   const carouselRef = useRef(null);
-  console.log('check', loading);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const hasStations = Array.isArray(radioList) && radioList.length > 0;
+
+  const updateScrollButtons = () => {
+    const c = carouselRef.current;
+    if (c && hasStations) {
+      setCanScrollLeft(c.scrollLeft > 0);
+      setCanScrollRight(c.scrollLeft + c.clientWidth < c.scrollWidth);
+    }
+  };
+
   const scroll = dir => {
     const c = carouselRef.current;
     if (!c) return;
-    const amt = c.offsetWidth / 2; // two cards at a time
+    const amt = c.offsetWidth / 2;
     c.scrollBy({ left: dir === 'left' ? -amt : amt, behavior: 'smooth' });
   };
 
-  if (radioList.length === 0) {
-    return (
-      <section className="relative flex flex-col gap-3 pb-2">
-        <div className="section-header flex items-center justify-between">
-          <p className="font-semibold text-2xl sm:text-4xl">{title}</p>
-        </div>
-        <p className="text-sm text-[var(--color-text-secondary)]">No Radio Stations Found.</p>
-      </section>
-    );
-  }
+  useEffect(() => {
+    if (!hasStations) return;
+    updateScrollButtons();
+    const c = carouselRef.current;
+    if (!c) return;
+    const handleScroll = () => updateScrollButtons();
+    c.addEventListener('scroll', handleScroll);
+    return () => c.removeEventListener('scroll', handleScroll);
+  }, [radioList, hasStations]);
 
   return (
     <section className="relative flex flex-col gap-3">
       <div className="section-header flex items-center justify-between">
         <p className="font-semibold text-2xl sm:text-4xl">{title}</p>
-        <p className="text-sm text-[var(--color-text-secondary)] cursor-pointer hover:underline hover:text-[var(--color-text-primary)]">
-          Show All
-        </p>
+        {hasStations && (
+          <p className="text-sm text-[var(--color-text-secondary)] cursor-pointer hover:underline hover:text-[var(--color-text-primary)]">
+            Show All
+          </p>
+        )}
       </div>
 
-      {/* Prev/Next always visible */}
-      <button
-        onClick={() => scroll('left')}
-        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-[var(--color-navigation-section)] rounded-full shadow hover:scale-105 transition text-[var(--color-text-secondary)]"
-      >
-        <ChevronLeftIcon className="h-6 w-6 hover:text-[var(--color-text-primary)]" />
-      </button>
-      <button
-        onClick={() => scroll('right')}
-        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-[var(--color-navigation-section)] rounded-full shadow hover:scale-105 transition text-[var(--color-text-secondary)]"
-      >
-        <ChevronRightIcon className="h-6 w-6 hover:text-[var(--color-text-primary)]" />
-      </button>
+      {/* Scroll Buttons - only shown if there are stations */}
+      {hasStations && (
+        <>
+          <button
+            onClick={() => scroll('left')}
+            aria-label="Scroll left"
+            disabled={!canScrollLeft}
+            className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-[var(--color-navigation-section)] rounded-full shadow hover:scale-105 transition text-[var(--color-text-secondary)] ${
+              !canScrollLeft ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+          >
+            <ChevronLeftIcon className="h-6 w-6 hover:text-[var(--color-text-primary)]" />
+          </button>
 
-      {/* Carousel: 50% width → 2 cards on mobile; natural autosize on ≥640px */}
+          <button
+            onClick={() => scroll('right')}
+            aria-label="Scroll right"
+            disabled={!canScrollRight}
+            className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-[var(--color-navigation-section)] rounded-full shadow hover:scale-105 transition text-[var(--color-text-secondary)] ${
+              !canScrollRight ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+          >
+            <ChevronRightIcon className="h-6 w-6 hover:text-[var(--color-text-primary)]" />
+          </button>
+        </>
+      )}
+
       <div
         ref={carouselRef}
         className="
@@ -60,31 +85,41 @@ const HeroContent = ({ loading, contentMatter: { title, radioList } }) => {
           no-scrollbar
           snap-x snap-mandatory
           px-4
+          gap-1
         "
         style={{ touchAction: 'pan-x' }}
       >
         {loading ? (
-          <>
-            {[...Array(10)].map((_, i) => (
-              <div key={i} className="snap-start shrink-0 w-full">
-                <CardPlaceHolder />
-              </div>
-            ))}
-          </>
+          [...Array(10)].map((_, i) => (
+            <div key={i} className="snap-start shrink-0 w-full">
+              <CardPlaceHolder />
+            </div>
+          ))
+        ) : hasStations ? (
+          radioList.map(station => (
+            <div
+              key={station?.stationuuid || `station-${Math.random()}`}
+              className="snap-start shrink-0 w-full"
+            >
+              <Card stationInfo={station} />
+            </div>
+          ))
         ) : (
-          <>
-            {radioList &&
-              radioList.map(station => (
-                <div key={station.stationuuid} className="snap-start shrink-0 w-full">
-                  <Card stationInfo={station} />
-                </div>
-              ))}
-          </>
+          <div className="text-center text-sm text-gray-500 col-span-full w-full py-10">
+            No stations available.
+          </div>
         )}
       </div>
     </section>
   );
 };
 
-HeroContent.propTypes = { title: PropTypes.string.isRequired, loading: PropTypes.bool.isRequired };
+HeroContent.propTypes = {
+  loading: PropTypes.bool.isRequired,
+  contentMatter: PropTypes.shape({
+    title: PropTypes.string,
+    radioList: PropTypes.arrayOf(PropTypes.object),
+  }),
+};
+
 export default HeroContent;

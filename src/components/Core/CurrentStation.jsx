@@ -1,41 +1,76 @@
 import { GlobeAltIcon, LanguageIcon, MusicalNoteIcon, StarIcon } from '@heroicons/react/24/outline';
 import { CursorArrowRaysIcon } from '@heroicons/react/24/solid';
+import { useAudio } from '../../context/AudioPlayer';
+import { useState } from 'react';
+import '../../styles/CurrentStation.css';
 
-const CurrentStation = () => (
-  <aside
-    className="bg-[var(--color-navigation-section)] backdrop-blur-xl p-4 rounded-sm fixed 
+const CurrentStation = () => {
+  const { currentStation } = useAudio();
+  const [imgError, setImgError] = useState(false);
+
+  const fallbackSrc = '/fallback-image.svg';
+
+  const imageSrc =
+    !currentStation?.favicon ||
+    currentStation?.favicon === '' ||
+    currentStation?.favicon === 'null' ||
+    currentStation?.favicon === null ||
+    imgError
+      ? fallbackSrc
+      : currentStation?.favicon;
+
+  return (
+    <aside
+      className="bg-[var(--color-navigation-section)] backdrop-blur-xl p-4 rounded-sm fixed 
         lg:w-66
         md:w-35 z-50 h-full"
-  >
-    <div className="">
-      <p className="text-md mb-2 font-semibold">Lorem1233</p>
-      <img src="/fallback-image.svg" alt="" className="rounded-md" />
-      <div className="flex items-baseline gap-2">
-        <p className="mt-2 font-semibold text-3xl">lorem1233</p>
-        <GlobeAltIcon className="h-6 text-[var(--color-primary)]" />
-      </div>
+    >
+      <div className="">
+        <p className="text-md mb-2 font-semibold">
+          <span className="text-[var(--color-text-secondary)] text-sm">Now Playing: </span>
+          <span>{currentStation?.name}</span>
+        </p>
+        <img
+          src={imageSrc}
+          alt="Station"
+          onError={() => setImgError(true)}
+          className="rounded-md w-full h-60 object-cover"
+        />
+        <div className="mt-2 flex items-baseline gap-2 overflow-hidden">
+          <div className="relative w-[180px] overflow-hidden">
+            <div className="marquee whitespace-nowrap font-semibold text-3xl">
+              {currentStation?.name}
+            </div>
+          </div>
+          {currentStation?.homepage && (
+            <a href={currentStation?.homepage} target="_blank" rel="noopener noreferrer">
+              <GlobeAltIcon className="h-6 text-[var(--color-primary)]" />
+            </a>
+          )}
+        </div>
 
-      <hr className="border-[var(--color-border)] mt-3" />
-      <div className="stationDetails mt-2 text-[var(--color-text-secondary)]">
-        <div className="flex items-center gap-2">
-          <LanguageIcon className="h-4" />
-          <span>Language</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <MusicalNoteIcon className="h-4" />
-          <span>Genre</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <CursorArrowRaysIcon className="h-4" />
-          <span>Clicks</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <StarIcon className="h-4" />
-          <span>Votes</span>
+        <hr className="border-[var(--color-border)] mt-3" />
+        <div className="stationDetails mt-2 text-[var(--color-text-secondary)]">
+          <div className="flex items-center gap-2">
+            <LanguageIcon className="h-4" />
+            <span> {currentStation?.language || 'Unknown'}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <MusicalNoteIcon className="h-4" />
+            <span>{currentStation?.tags || 'NA'}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <CursorArrowRaysIcon className="h-4" />
+            <span>{currentStation?.clickcount || 0}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <StarIcon className="h-4" />
+            <span>{currentStation?.votes || 0}</span>
+          </div>
         </div>
       </div>
-    </div>
-  </aside>
-);
+    </aside>
+  );
+};
 
 export default CurrentStation;

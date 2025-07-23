@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { PlayIcon } from '@heroicons/react/24/outline';
+import { PauseIcon, PlayIcon } from '@heroicons/react/24/outline';
 import '../../styles/Hero.css';
+import { useAudio } from '../../context/AudioPlayer';
 
 const Card = ({ stationInfo }) => {
   const [pressed, setPressed] = useState(false);
@@ -20,6 +21,8 @@ const Card = ({ stationInfo }) => {
       ? fallbackSrc
       : stationInfo.favicon;
 
+  const { playStation, isPlaying, currentStation, togglePlayPause } = useAudio();
+
   return (
     <div className="snap-start shrink-0 w-full">
       <div
@@ -34,6 +37,13 @@ const Card = ({ stationInfo }) => {
         onMouseDown={handlePressStart}
         onMouseUp={handlePressEnd}
         onMouseLeave={handlePressEnd}
+        onClick={() => {
+          if (isPlaying && currentStation?.url_resolved === stationInfo.url_resolved) {
+            togglePlayPause();
+          } else {
+            playStation(stationInfo);
+          }
+        }}
       >
         {/* Image + Play overlay */}
         <div className="relative">
@@ -43,8 +53,16 @@ const Card = ({ stationInfo }) => {
             onError={() => setImgError(true)}
             className="rounded-md w-full h-35 md:h-40 object-cover"
           />
-          <PlayIcon
-            className={`
+
+          {isPlaying && currentStation?.url_resolved === stationInfo.url_resolved ? (
+            <PauseIcon
+              className="h-10 w-10 text-[var(--color-bg-1)]
+              bg-[var(--color-accent)] rounded-full p-2
+              absolute bottom-2 right-2"
+            />
+          ) : (
+            <PlayIcon
+              className={`
               h-10 w-10 text-[var(--color-bg-1)]
               bg-[var(--color-accent)] rounded-full p-2
               absolute bottom-2 right-2
@@ -52,7 +70,8 @@ const Card = ({ stationInfo }) => {
               ${pressed ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}
               hover:bg-[var(--color-accent-hover)] hover:text-black
             `}
-          />
+            />
+          )}
         </div>
 
         {/* Station Name */}

@@ -3,8 +3,9 @@ import { useState, useEffect } from 'react';
 import { MagnifyingGlassIcon, MoonIcon, SunIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 
-const Navbar = ({ radioStationList }) => {
+const Navbar = ({ radioStationList, userInput }) => {
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
+  // const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -15,6 +16,10 @@ const Navbar = ({ radioStationList }) => {
   const navigate = useNavigate();
   const handleMobileSearch = () => {
     navigate('/search');
+  };
+
+  const sendUserQuery = inputValue => {
+    userInput(inputValue);
   };
 
   return (
@@ -52,6 +57,7 @@ const Navbar = ({ radioStationList }) => {
             placeholder="Search Radio Station"
             className="flex-1 bg-transparent outline-none"
             list="stations"
+            onChange={e => sendUserQuery(e.target.value)}
           />
           <datalist id="stations">
             {radioStationList.map((c, index) => (

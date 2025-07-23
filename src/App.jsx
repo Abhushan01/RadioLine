@@ -10,59 +10,87 @@ import DiscoverGlobe from './components/Features/DiscoverGlobe';
 import Search from './components/Features/Search';
 import { useEffect, useState } from 'react';
 import CurrentStationPlaceholder from './components/Placeholder/CurrentStationPlaceholder';
+import { useAudio } from './context/AudioPlayer';
+
+// timeout helper
+const fetchWithTimeout = (url, options = {}, timeout = 120000) =>
+  new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('Request timed out')), timeout);
+
+    fetch(url, options)
+      .then(response => {
+        clearTimeout(timer);
+        resolve(response);
+      })
+      .catch(err => {
+        clearTimeout(timer);
+        reject(err);
+      });
+  });
 
 const App = () => {
   const [server, setServer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [setError] = useState(null);
   const [radioStationList, setRadioStationList] = useState([]);
-  const [preferedCountry] = useState(localStorage.getItem('prefCount') || null);
+  const [preferedCountry] = useState('IN'); // Can be pulled from localStorage
+  const { currentStation } = useAudio();
+  const isAudioPlaying = useAudio().loading;
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState(null);
+
+  const handleDataFromChild = data => {
+    setSearchQuery(data);
+  };
+
+  // Fetch available radio servers
   useEffect(() => {
     const fetchRadioServers = async () => {
+      setLoading(true);
       try {
-        const response = await fetch('https://all.api.radio-browser.info/json/servers');
-        if (!response.ok) {
-          throw new Error('Failed to load Data');
-        }
+        const response = await fetchWithTimeout(
+          'https://all.api.radio-browser.info/json/servers',
+          {},
+          120000
+        );
+        if (!response.ok) throw new Error('Failed to load radio servers');
+
         const result = await response.json();
-        setServer(result[Math.floor(Math.random() * result.length)]?.name);
-      } catch (error) {
-        setError(error);
-      } finally {
-        setLoading(false);
+        const randomServer = result[Math.floor(Math.random() * result.length)]?.name;
+        setServer(randomServer);
+      } catch (err) {
+        console.error('Server fetch error:', err.message);
+        setError(err.message);
       }
     };
 
     fetchRadioServers();
   }, []);
 
+  // Fetch stations for the preferred country
   useEffect(() => {
     const fetchRadioStations = async () => {
-      setLoading(true);
       if (!preferedCountry) {
         navigate('/discover');
-        setLoading(false);
-      }
-      if (!server || !preferedCountry) {
-        setLoading(false);
         return;
       }
+
+      if (!server) return;
+
+      setLoading(true);
+
       try {
         const radioURL = `https://${server}/json/stations/bycountrycodeexact/${preferedCountry}`;
-        const response = await fetch(radioURL);
-        if (!response.ok) {
-          throw new Error('Failed to fetch Stations');
-        }
+        const response = await fetchWithTimeout(radioURL, {}, 120000);
+        if (!response.ok) throw new Error('Failed to fetch radio stations');
+
         const result = await response.json();
-        if (result.length > 0) {
-          setRadioStationList(result);
-          setLoading(false);
-          console.log('checking', radioStationList);
-        }
-      } catch (error) {
+        setRadioStationList(result);
+        console.log('Fetched stations:', result);
+      } catch (err) {
+        console.error('Station fetch error:', err.message);
         setRadioStationList([]);
-        setError(error);
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -73,12 +101,8 @@ const App = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar radioStationList={radioStationList} />
-      {radioStationList &&
-        radioStationList.length > 0 &&
-        radioStationList.map(radio => {
-          <div>{radio.name}</div>;
-        })}
+      <Navbar radioStationList={radioStationList} userInput={handleDataFromChild} />
+
       <main className="flex-1 pt-[2.7rem] px-4 md:pt-[5.5rem] lg:pt-[6.1rem] md:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-5 md:gap-4">
           {/* Desktop sidebar */}
@@ -87,7 +111,11 @@ const App = () => {
           </div>
 
           {/* Main content */}
-          <section className={!preferedCountry ? 'md:col-span-4 mt-9' : 'md:col-span-3 mt-9'}>
+          <section
+            className={
+              !preferedCountry || !currentStation ? 'md:col-span-4 mt-9' : 'md:col-span-3 mt-9'
+            }
+          >
             <Routes>
               <Route
                 path="/"
@@ -97,6 +125,7 @@ const App = () => {
                     sectionDetails={{
                       preferedCountry,
                       radioStationList,
+                      searchQuery,
                     }}
                   />
                 }
@@ -107,20 +136,22 @@ const App = () => {
           </section>
 
           {/* Desktop current station */}
-          {!preferedCountry ? (
+          {!preferedCountry || !currentStation ? (
             <></>
           ) : (
             <div className="hidden md:block">
-              {loading ? <CurrentStationPlaceholder /> : <CurrentStation />}
+              {isAudioPlaying ? <CurrentStationPlaceholder /> : <CurrentStation />}
             </div>
           )}
         </div>
       </main>
-      {/* Mobile: Sidebar icons fixed at very bottom */}
+
+      {/* Mobile: Sidebar icons fixed at bottom */}
       <div className="fixed bottom-0 left-0 w-full block md:hidden z-50">
         <Sidebar mobile />
       </div>
-      {/* Footer: sits above mobile sidebar; on desktop, fixed at bottom-0 */}
+
+      {/* Footer */}
       <Footer loading={loading} />
     </div>
   );
