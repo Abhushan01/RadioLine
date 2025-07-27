@@ -12,61 +12,38 @@
   --transition: all 0.3s ease;
 }
 
-/* === Light Theme === */
 :root[data-theme='light'] {
   /* Base Backgrounds */
-  --color-bg-1: #bebebe;
-  --color-bg-2: #ffffff;
-  --color-surface: #ffffff;
-  --color-section-bg: #fffae3;
-  --color-border: #e0e0e0;
+  --color-bg-1: #d8d5db;
+  --color-bg-2: #adacb5;
+  --color-border: #2a2d28;
+  --color-navigation-section: hsla(270, 8%, 85%, 65%);
+  --color-navigation-surface: hsla(247, 6%, 69%, 97%);
 
   /* Text */
-  --color-text-primary: #2b2b2b;
-  --color-text-secondary: #6c6c6c;
-  --color-placeholder: #9a9a9a;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #4d4d4d;
+  --color-placeholder: #4d4d4d;
 
   /* Primary Action Color */
-  --color-primary: #f7567c;
-  --color-primary-hover: #e1b1bd;
-  --color-primary-active: #c54365;
-  --color-primary-disabled: #fcd6df;
+  --color-primary: #2d3142;
+  --color-primary-hover: #4b526e;
+  --color-primary-active: #c41b58;
+  --color-primary-disabled: #64263d;
 
   /* Accent (for outline, link highlights, etc.) */
-  --color-accent: #f7567c;
-  --color-accent-hover: rgba(247, 86, 124, 0.1);
-  --color-accent-active: rgba(247, 86, 124, 0.2);
-  --color-accent-disabled: #fcd6df;
+  --color-accent: #616588;
+  --color-accent-hover: #474a63;
 
   /* Secondary Button */
-  --color-secondary-hover: #f5f1d2;
-  --color-secondary-active: #e1dcbf;
+  --color-secondary-hover: #232722;
+  --color-secondary-active: #1d201b;
 
-  /* Links */
-  --color-link: #f7567c;
-  --color-link-hover: #2b2b2b;
-  --color-link-visited: #d8476d;
-
-  /* Alerts */
-  --color-success-bg: #e6f7e8;
-  --color-success-border: #2fc86d;
-
-  --color-error-bg: #fbeaec;
-  --color-error-border: #f7567c;
-
-  --color-warning-bg: #fff6cc;
-  --color-warning-border: #ffcc00;
-
-  --color-info-bg: #e8f1fb;
-  --color-info-border: #3c91e6;
-
-  /* Controls */
-  --color-toggle-on: #f7567c;
-  --color-toggle-off: #cccccc;
-  --color-toggle-thumb: #ffffff;
-
-  --color-slider-track: #f7567c;
-  --color-slider-bg: #e0e0e0;
+  --card-hover-background: #7c7a8a;
+  --hero-section-gradient-1: #4b526e;
+  --hero-section-gradient-2: #6e5d6388;
+  --hero-text-title-gradient-2: #6d769c;
+  --sidebar-link-color-1: hsla(229, 19%, 22%, 0.592);
 }
 
 /* === Dark Theme === */
@@ -96,6 +73,12 @@
   /* Secondary Button */
   --color-secondary-hover: #232722;
   --color-secondary-active: #1d201b;
+
+  --card-hover-background: #0d0206;
+  --hero-section-gradient-1: #280612;
+  --hero-section-gradient-2: #6f022888;
+  --hero-text-title-gradient-2: #1a050c;
+  --sidebar-link-color-1: hsla(339, 87%, 27%, 0.592);
 }
 
 /* === Base Styles === */
@@ -114,6 +97,7 @@ body {
 html[data-theme='light'],
 body[data-theme='light'] {
   background: linear-gradient(180deg, var(--color-bg-2) 0%, var(--color-bg-1) 75%);
+  background-image: url('/bg-light.svg');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;

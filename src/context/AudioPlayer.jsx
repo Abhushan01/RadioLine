@@ -19,24 +19,7 @@ export const AudioProvider = ({ children }) => {
     audioRef.current = audio;
 
     const onPause = () => {
-      // Avoid resume if user explicitly paused
-      if (audio.ended || audio.error) return;
-
-      console.warn('Audio paused. Last action:', lastActionRef.current);
-      if (lastActionRef.current !== 'pause') {
-        // Attempt auto-resume
-        console.log('Attempting auto-resume...');
-        audio
-          .play()
-          .then(() => {
-            setIsPlaying(true);
-          })
-          .catch(err => {
-            console.error('Auto-resume failed:', err);
-          });
-      } else {
-        console.log('User-initiated pause; skipping auto-resume');
-      }
+      console.log('Audio paused. lastAction:', lastActionRef.current);
     };
 
     const onError = () => {
@@ -45,18 +28,44 @@ export const AudioProvider = ({ children }) => {
       setLoading(false);
     };
 
+    const onWaiting = () => {
+      console.log('Audio waiting (buffering)...');
+      if (lastActionRef.current === 'play') {
+        audio.play().catch(err => {
+          console.error('Auto-resume during buffering failed:', err);
+        });
+      }
+    };
+
     audio.addEventListener('pause', onPause);
     audio.addEventListener('error', onError);
+    audio.addEventListener('waiting', onWaiting);
 
     return () => {
       audio.removeEventListener('pause', onPause);
       audio.removeEventListener('error', onError);
+      audio.removeEventListener('waiting', onWaiting);
       audio.pause();
       clearTimeout(retryTimeoutRef.current);
     };
   }, []);
 
   const isM3U8 = url => /\.m3u8($|\?)/i.test(url);
+
+  // Add this helper function to update recent played list in localStorage
+  const updateRecentlyPlayed = station => {
+    try {
+      const stored = JSON.parse(localStorage.getItem('recentlyPlayed')) || [];
+      const filtered = stored.filter(s => s.stationuuid !== station.stationuuid);
+      filtered.unshift(station);
+      const recent = filtered.slice(0, 3);
+      localStorage.setItem('recentlyPlayed', JSON.stringify(recent));
+      // Optionally, dispatch a custom event to notify other components
+      window.dispatchEvent(new Event('recentlyPlayedUpdated'));
+    } catch (e) {
+      console.error('Failed to update recently played', e);
+    }
+  };
 
   const playStation = station => {
     if (!station?.url_resolved) return;
@@ -65,17 +74,18 @@ export const AudioProvider = ({ children }) => {
     setLoading(true);
     lastActionRef.current = 'play';
 
+    updateRecentlyPlayed(station);
+
     const audio = audioRef.current;
     clearTimeout(retryTimeoutRef.current);
 
-    // Clean up HLS
     if (hlsRef.current) {
       hlsRef.current.destroy();
       hlsRef.current = null;
     }
 
     audio.pause();
-    audio.removeAttribute('src'); // force reload
+    audio.removeAttribute('src');
 
     if (isM3U8(station.url_resolved) && Hls.isSupported()) {
       const hls = new Hls();
@@ -101,15 +111,12 @@ export const AudioProvider = ({ children }) => {
         if (data.fatal) {
           switch (data.type) {
             case Hls.ErrorTypes.NETWORK_ERROR:
-              console.warn('Recovering from HLS network error');
               hls.startLoad();
               break;
             case Hls.ErrorTypes.MEDIA_ERROR:
-              console.warn('Recovering from HLS media error');
               hls.recoverMediaError();
               break;
             default:
-              console.warn('HLS fatal error; destroying instance');
               hls.destroy();
               break;
           }
@@ -134,13 +141,11 @@ export const AudioProvider = ({ children }) => {
         });
     }
 
-    // Fallback retry if stuck
     retryTimeoutRef.current = setTimeout(() => {
       if (audio.paused || audio.readyState < 3) {
-        console.warn('Stream appears stuck; retrying...');
         playStation(station);
       }
-    }, 90 * 1000); // 90 seconds
+    }, 90 * 1000);
   };
 
   const togglePlayPause = () => {
@@ -151,9 +156,7 @@ export const AudioProvider = ({ children }) => {
       audio
         .play()
         .then(() => setIsPlaying(true))
-        .catch(err => {
-          console.error('Error resuming audio:', err);
-        });
+        .catch(console.error);
     } else {
       lastActionRef.current = 'pause';
       audio.pause();

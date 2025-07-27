@@ -1,10 +1,11 @@
+// src/components/Core/HeroContent.jsx
 import PropTypes from 'prop-types';
 import { useRef, useState, useEffect } from 'react';
 import Card from './Card';
 import CardPlaceHolder from '../Placeholder/CardPlaceHolder';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 
-const HeroContent = ({ loading, contentMatter }) => {
+const HeroContent = ({ loading, contentMatter, showAllFlag }) => {
   const { title = 'Untitled', radioList = [] } = contentMatter || {};
   const carouselRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -37,18 +38,24 @@ const HeroContent = ({ loading, contentMatter }) => {
     return () => c.removeEventListener('scroll', handleScroll);
   }, [radioList, hasStations]);
 
+  const handleShowAllClick = () => {
+    showAllFlag({ showAllFlag: true, title, radioList });
+  };
+
   return (
     <section className="relative flex flex-col gap-3">
       <div className="section-header flex items-center justify-between">
         <p className="font-semibold text-2xl sm:text-4xl">{title}</p>
         {hasStations && (
-          <p className="text-sm text-[var(--color-text-secondary)] cursor-pointer hover:underline hover:text-[var(--color-text-primary)]">
+          <button
+            className="bg-transparent text-sm text-[var(--color-text-secondary)] cursor-pointer hover:underline hover:text-[var(--color-text-primary)]"
+            onClick={handleShowAllClick}
+          >
             Show All
-          </p>
+          </button>
         )}
       </div>
 
-      {/* Scroll Buttons - only shown if there are stations */}
       {hasStations && (
         <>
           <button
@@ -59,7 +66,7 @@ const HeroContent = ({ loading, contentMatter }) => {
               !canScrollLeft ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
-            <ChevronLeftIcon className="h-6 w-6 hover:text-[var(--color-text-primary)]" />
+            <ChevronLeftIcon className="h-6 w-6" />
           </button>
 
           <button
@@ -70,23 +77,14 @@ const HeroContent = ({ loading, contentMatter }) => {
               !canScrollRight ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
-            <ChevronRightIcon className="h-6 w-6 hover:text-[var(--color-text-primary)]" />
+            <ChevronRightIcon className="h-6 w-6" />
           </button>
         </>
       )}
 
       <div
         ref={carouselRef}
-        className="
-          station-carousel
-          grid grid-flow-col
-          auto-cols-[50%] sm:auto-cols-max
-          overflow-x-auto overflow-y-hidden
-          no-scrollbar
-          snap-x snap-mandatory
-          px-4
-          gap-1
-        "
+        className="station-carousel grid grid-flow-col auto-cols-[50%] sm:auto-cols-max overflow-x-auto overflow-y-hidden no-scrollbar snap-x snap-mandatory px-4 gap-1"
         style={{ touchAction: 'pan-x' }}
       >
         {loading ? (
@@ -120,6 +118,7 @@ HeroContent.propTypes = {
     title: PropTypes.string,
     radioList: PropTypes.arrayOf(PropTypes.object),
   }),
+  showAllFlag: PropTypes.func.isRequired,
 };
 
 export default HeroContent;

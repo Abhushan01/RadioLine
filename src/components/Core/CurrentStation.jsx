@@ -1,14 +1,30 @@
+import { useState, useEffect } from 'react';
 import { GlobeAltIcon, LanguageIcon, MusicalNoteIcon, StarIcon } from '@heroicons/react/24/outline';
 import { CursorArrowRaysIcon } from '@heroicons/react/24/solid';
 import { useAudio } from '../../context/AudioPlayer';
-import { useState } from 'react';
 import '../../styles/CurrentStation.css';
 
 const CurrentStation = () => {
   const { currentStation } = useAudio();
   const [imgError, setImgError] = useState(false);
+  const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || 'dark');
 
-  const fallbackSrc = '/fallback-image.svg';
+  // Listen for theme changes
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const newTheme = document.documentElement.dataset.theme || 'dark';
+      setTheme(newTheme);
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  const fallbackSrc = theme === 'light' ? '/fallback-image-light.svg' : '/fallback-image.svg';
 
   const imageSrc =
     !currentStation?.favicon ||
@@ -25,17 +41,19 @@ const CurrentStation = () => {
         lg:w-66
         md:w-35 z-50 h-full"
     >
-      <div className="">
+      <div>
         <p className="text-md mb-2 font-semibold">
           <span className="text-[var(--color-text-secondary)] text-sm">Now Playing: </span>
           <span>{currentStation?.name}</span>
         </p>
+
         <img
           src={imageSrc}
           alt="Station"
           onError={() => setImgError(true)}
           className="rounded-md w-full h-60 object-cover"
         />
+
         <div className="mt-2 flex items-baseline gap-2 overflow-hidden">
           <div className="relative w-[180px] overflow-hidden">
             <div className="marquee whitespace-nowrap font-semibold text-3xl">
@@ -50,10 +68,11 @@ const CurrentStation = () => {
         </div>
 
         <hr className="border-[var(--color-border)] mt-3" />
+
         <div className="stationDetails mt-2 text-[var(--color-text-secondary)]">
           <div className="flex items-center gap-2">
             <LanguageIcon className="h-4" />
-            <span> {currentStation?.language || 'Unknown'}</span>
+            <span>{currentStation?.language || 'Unknown'}</span>
           </div>
           <div className="flex items-center gap-2">
             <MusicalNoteIcon className="h-4" />

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PauseIcon, PlayIcon } from '@heroicons/react/24/outline';
 import '../../styles/Hero.css';
 import { useAudio } from '../../context/AudioPlayer';
@@ -6,11 +6,28 @@ import { useAudio } from '../../context/AudioPlayer';
 const Card = ({ stationInfo }) => {
   const [pressed, setPressed] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || 'dark');
+
+  // Listen for theme changes dynamically
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const newTheme = document.documentElement.dataset.theme || 'dark';
+      setTheme(newTheme);
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   const handlePressStart = () => setPressed(true);
   const handlePressEnd = () => setPressed(false);
 
-  const fallbackSrc = '/fallback-image.svg';
+  // Theme-based fallback image
+  const fallbackSrc = theme === 'light' ? '/fallback-image-light.svg' : '/fallback-image.svg';
 
   const imageSrc =
     !stationInfo.favicon ||
@@ -29,8 +46,8 @@ const Card = ({ stationInfo }) => {
         className={`
           card rounded-md p-2 md:p-2 w-[150px] md:w-[170px]
           cursor-pointer text-[var(--color-text-secondary)]
-          relative group hover:bg-[#0D0206] hover:text-[var(--color-text-primary)]
-          ${pressed ? 'bg-[#0D0206] text-[var(--color-text-primary)]' : ''}
+          relative group hover:bg-[var(--card-hover-background)] hover:text-[var(--color-text-primary)]
+          ${pressed ? 'bg-[var(--card-hover-background)] text-[var(--color-text-primary)]' : ''}
         `}
         onTouchStart={handlePressStart}
         onTouchEnd={handlePressEnd}

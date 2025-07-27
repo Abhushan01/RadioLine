@@ -5,18 +5,19 @@ import Hero from './components/Core/Hero';
 import Navbar from './components/Core/Navbar';
 import Sidebar from './components/Core/Sidebar';
 import CurrentStation from './components/Core/CurrentStation';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import DiscoverGlobe from './components/Features/DiscoverGlobe';
 import Search from './components/Features/Search';
 import { useEffect, useState } from 'react';
 import CurrentStationPlaceholder from './components/Placeholder/CurrentStationPlaceholder';
+import FavoriteStations from './components/Features/FavoriteStations';
+import RecentlyPlayed from './components/Features/RecentlyPlayed';
+import Genres from './components/Features/Genres';
 import { useAudio } from './context/AudioPlayer';
 
-// timeout helper
 const fetchWithTimeout = (url, options = {}, timeout = 120000) =>
   new Promise((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error('Request timed out')), timeout);
-
     fetch(url, options)
       .then(response => {
         clearTimeout(timer);
@@ -31,19 +32,27 @@ const fetchWithTimeout = (url, options = {}, timeout = 120000) =>
 const App = () => {
   const [server, setServer] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [setError] = useState(null);
+  const { setError } = useState(null);
   const [radioStationList, setRadioStationList] = useState([]);
-  const [preferedCountry] = useState('IN'); // Can be pulled from localStorage
+  const [preferedCountry, setPreferedCountry] = useState(() => {
+    const saved = localStorage.getItem('prefCount');
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  const [countryData, setCountryData] = useState([]);
+  const [countriesLoading, setCountriesLoading] = useState(false);
+  const [countriesError, setCountriesError] = useState(false);
+
   const { currentStation } = useAudio();
   const isAudioPlaying = useAudio().loading;
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState(null);
 
-  const handleDataFromChild = data => {
-    setSearchQuery(data);
-  };
+  const handleDataFromChild = data => setSearchQuery(data);
 
-  // Fetch available radio servers
+  const location = useLocation();
+  const isDiscoverRoute = location.pathname === '/discover';
+  // Fetch radio servers
   useEffect(() => {
     const fetchRadioServers = async () => {
       setLoading(true);
@@ -61,13 +70,81 @@ const App = () => {
       } catch (err) {
         console.error('Server fetch error:', err.message);
         setError(err.message);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchRadioServers();
   }, []);
 
-  // Fetch stations for the preferred country
+  // Fetch and merge countries
+  useEffect(() => {
+    if (!server || countryData.length > 0) return;
+
+    const fetchCountries = async () => {
+      setCountriesLoading(true);
+      setCountriesError(false);
+
+      try {
+        const [restRes, radioRes] = await Promise.all([
+          fetchWithTimeout(
+            'https://restcountries.com/v3.1/all?fields=name,cca2,capital,capitalInfo,flags'
+          ),
+          fetchWithTimeout(`https://${server}/json/countries`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': `application/x-www-form-urlencoded`,
+            },
+            body: '',
+          }),
+        ]);
+
+        if (!restRes.ok || !radioRes.ok) {
+          throw new Error('Failed to fetch country data');
+        }
+
+        const [restData, radioData] = await Promise.all([restRes.json(), radioRes.json()]);
+
+        const radioMap = {};
+        radioData.forEach(item => {
+          if (item.iso_3166_1) {
+            radioMap[item.iso_3166_1.toUpperCase()] = item;
+          }
+        });
+
+        const combined = restData
+          .map(country => {
+            const code = country.cca2?.toUpperCase();
+            const radio = radioMap[code];
+            if (!radio || radio.stationcount === 0) return null;
+
+            return {
+              cca2: code,
+              name: country.name?.common || 'Unknown',
+              capital: country.capital?.[0] || 'Unknown',
+              capitalInfo: country.capitalInfo || {},
+              flag: country.flags?.svg || '',
+              stationCount: radio.stationcount || 0,
+              radioName: radio.name || '',
+            };
+          })
+          .filter(Boolean)
+          .sort((a, b) => a.name.localeCompare(b.name));
+
+        setCountryData(combined);
+      } catch (err) {
+        console.error('Country fetch error:', err.message);
+        setCountriesError(true);
+      } finally {
+        setCountriesLoading(false);
+      }
+    };
+
+    fetchCountries();
+  }, [server, countryData.length]);
+
+  // Fetch stations for preferred country
   useEffect(() => {
     const fetchRadioStations = async () => {
       if (!preferedCountry) {
@@ -80,13 +157,12 @@ const App = () => {
       setLoading(true);
 
       try {
-        const radioURL = `https://${server}/json/stations/bycountrycodeexact/${preferedCountry}`;
+        const radioURL = `https://${server}/json/stations/bycountrycodeexact/${preferedCountry.cca2}`;
         const response = await fetchWithTimeout(radioURL, {}, 120000);
         if (!response.ok) throw new Error('Failed to fetch radio stations');
 
         const result = await response.json();
         setRadioStationList(result);
-        console.log('Fetched stations:', result);
       } catch (err) {
         console.error('Station fetch error:', err.message);
         setRadioStationList([]);
@@ -101,16 +177,17 @@ const App = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar radioStationList={radioStationList} userInput={handleDataFromChild} />
-
+      <Navbar
+        radioStationList={isDiscoverRoute ? [] : radioStationList}
+        countryList={isDiscoverRoute ? countryData : []}
+        userInput={handleDataFromChild}
+      />
       <main className="flex-1 pt-[2.7rem] px-4 md:pt-[5.5rem] lg:pt-[6.1rem] md:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-5 md:gap-4">
-          {/* Desktop sidebar */}
           <div className="hidden md:block">
             <Sidebar />
           </div>
 
-          {/* Main content */}
           <section
             className={
               !preferedCountry || !currentStation ? 'md:col-span-4 mt-9' : 'md:col-span-3 mt-9'
@@ -130,28 +207,40 @@ const App = () => {
                   />
                 }
               />
-              <Route path="/discover" element={<DiscoverGlobe />} />
+              <Route
+                path="/discover"
+                element={
+                  <DiscoverGlobe
+                    countryList={countryData}
+                    loading={countriesLoading}
+                    error={countriesError}
+                    setPreferredCountry={setPreferedCountry}
+                    searchQuery={searchQuery}
+                  />
+                }
+              />
               <Route path="/search" element={<Search />} />
+              <Route path="/favorites" element={<FavoriteStations />} />
+              <Route path="/recents" element={<RecentlyPlayed />} />
+              <Route
+                path="/genres"
+                element={
+                  <Genres radioStationList={radioStationList} currentStation={currentStation} />
+                }
+              />
             </Routes>
           </section>
 
-          {/* Desktop current station */}
-          {!preferedCountry || !currentStation ? (
-            <></>
-          ) : (
+          {!preferedCountry || !currentStation ? null : (
             <div className="hidden md:block">
               {isAudioPlaying ? <CurrentStationPlaceholder /> : <CurrentStation />}
             </div>
           )}
         </div>
       </main>
-
-      {/* Mobile: Sidebar icons fixed at bottom */}
       <div className="fixed bottom-0 left-0 w-full block md:hidden z-50">
         <Sidebar mobile />
       </div>
-
-      {/* Footer */}
       <Footer loading={loading} />
     </div>
   );

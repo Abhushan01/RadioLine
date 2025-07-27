@@ -5,7 +5,7 @@ const HeroSectionPlaceholder = () => (
       <div className="countryDetails flex flex-col gap-3 flex-1">
         {/* Country Info (Text + Flag) */}
         <div className="countryInfo flex items-center gap-4">
-          <div className="h-24 w-70 bg-pink-900 rounded" /> {/* Placeholder for 'INDIA' */}
+          <div className="h-24 w-50 md:w-70 bg-pink-900 rounded" /> {/* Placeholder for 'INDIA' */}
           <div className="h-12 w-12 bg-pink-800 rounded" /> {/* Flag placeholder */}
         </div>
 

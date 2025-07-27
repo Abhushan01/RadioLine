@@ -7,12 +7,12 @@ li > button {
 li:hover,
 .active {
   color: var(--color-primary);
-  background: linear-gradient(90deg, hsla(339, 87%, 27%, 0.592) 0%, hsla(340, 19%, 15%, 0) 75%);
+  background: linear-gradient(90deg, var(--sidebar-link-color-1) 0%, hsla(340, 19%, 15%, 0) 75%);
   border-left: 3px solid var(--color-primary);
 }
 
 .active-mobile {
-  background: linear-gradient(0deg, hsla(339, 87%, 27%, 0.592) 0%, hsla(340, 19%, 15%, 0) 75%);
+  background: linear-gradient(0deg, var(--sidebar-link-color-1) 0%, hsla(340, 19%, 15%, 0) 75%);
   border-bottom: 3px solid var(--color-primary);
   color: var(--color-primary);
 }
