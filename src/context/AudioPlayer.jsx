@@ -58,7 +58,7 @@ export const AudioProvider = ({ children }) => {
       const stored = JSON.parse(localStorage.getItem('recentlyPlayed')) || [];
       const filtered = stored.filter(s => s.stationuuid !== station.stationuuid);
       filtered.unshift(station);
-      const recent = filtered.slice(0, 3);
+      const recent = filtered.slice(0, 10);
       localStorage.setItem('recentlyPlayed', JSON.stringify(recent));
       // Optionally, dispatch a custom event to notify other components
       window.dispatchEvent(new Event('recentlyPlayedUpdated'));
