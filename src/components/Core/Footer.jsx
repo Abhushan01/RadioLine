@@ -161,7 +161,7 @@ const Footer = () => {
         <div className="mx-2 md:flex items-center gap-3 ">
           <button onClick={handleLikeClick} disabled={loading}>
             {liked ? (
-              <HeartSolidIcon className="h-6 text-[var(--color-primary)]" />
+              <HeartSolidIcon className="h-6 text-red-500" />
             ) : (
               <HeartOutlineIcon className="h-6" />
             )}

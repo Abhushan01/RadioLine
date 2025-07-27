@@ -189,7 +189,11 @@ const App = () => {
           </div>
 
           <section
-            className={!preferedCountry || !currentStation ? 'md:col-span-4' : 'md:col-span-3'}
+            className={
+              !preferedCountry || !currentStation
+                ? 'md:col-span-4 mt-9 md:mt-0 '
+                : 'md:col-span-3 mt-9 md:mt-0'
+            }
           >
             <Routes>
               <Route

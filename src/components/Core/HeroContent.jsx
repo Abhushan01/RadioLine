@@ -48,7 +48,7 @@ const HeroContent = ({ loading, contentMatter, showAllFlag }) => {
         <p className="font-semibold text-2xl sm:text-4xl">{title}</p>
         {hasStations && (
           <button
-            className="bg-transparent text-sm text-[var(--color-text-secondary)] cursor-pointer hover:underline hover:text-[var(--color-text-primary)]"
+            className="bg-transparent text-sm text-[var(--color-text-secondary)] hover:underline hover:text-[var(--color-text-primary)]"
             onClick={handleShowAllClick}
           >
             Show All

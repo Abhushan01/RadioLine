@@ -67,7 +67,7 @@ const Hero = ({ loading, sectionDetails: { preferedCountry, radioStationList, se
   }
 
   return (
-    <main className="mt-9">
+    <main className="mt-0 md:mt-9">
       {showAllData?.showAllFlag ? (
         <div className="px-4 mt-4">
           <div className="flex items-center justify-between mb-2">

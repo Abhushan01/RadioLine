@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLikedStations } from '../../hooks/useLikedStations';
 import { useAudio } from '../../context/AudioPlayer';
 import { likedStationBus } from '../../hooks/likedStationBus';
-
+import { PauseIcon, PlayIcon } from '@heroicons/react/24/outline';
+import { HeartIcon } from '@heroicons/react/16/solid';
 const DB_NAME = 'RadioAppDB';
 const STORE_NAME = 'likedStations';
 
@@ -26,75 +27,110 @@ const clearLikedStations = async () => {
 
 const FavoriteStations = () => {
   const { likedStations, unlikeStation, refreshStations } = useLikedStations();
+  const [imgErrors, setImgErrors] = useState({});
+  const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || 'dark');
 
-  const { playStation, currentStation } = useAudio();
+  const fallbackSrc = theme === 'light' ? '/fallback-image-light.svg' : '/fallback-image.svg';
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const newTheme = document.documentElement.dataset.theme || 'dark';
+      setTheme(newTheme);
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  const { playStation, currentStation, isPlaying } = useAudio();
 
   useEffect(() => {
     refreshStations();
   }, [refreshStations]);
 
-  const handlePlay = station => {
-    playStation(station);
+  const handlePlay = station => playStation(station);
+  const handleUnlike = uuid => unlikeStation(uuid);
+
+  const handleImageError = stationuuid => {
+    setImgErrors(prev => ({ ...prev, [stationuuid]: true }));
   };
 
-  const handleUnlike = async stationuuid => {
-    await unlikeStation(stationuuid);
-  };
-
-  const handleClearAll = () => {
-    if (window.confirm('Are you sure you want to remove all liked stations?')) {
-      clearLikedStations();
-    }
+  const imageSrc = station => {
+    const isBroken = imgErrors[station.stationuuid];
+    const favicon = station.favicon?.trim();
+    return !favicon || isBroken ? fallbackSrc : favicon;
   };
 
   return (
-    <div className="p-4">
+    <div className="p-4 bg-[var(--color-navigation-section)] backdrop-blur-xl rounded-sm">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Liked Stations</h2>
+        <p className="font-semibold text-2xl sm:text-4xl">Your Favorites</p>
         {likedStations.length > 0 && (
           <button
-            className="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
-            onClick={handleClearAll}
+            className="bg-transparent text-sm text-[var(--color-text-secondary)] hover:underline hover:text-[var(--color-text-primary)]"
+            onClick={() => clearLikedStations()}
           >
-            Remove All Likes
+            Clear Playlist
           </button>
         )}
       </div>
 
       {likedStations.length === 0 ? (
-        <p className="text-sm text-gray-400">No stations liked yet.</p>
+        <p className="text-sm text-[var(--color-text-secondary)]">No stations liked yet.</p>
       ) : (
-        <ul className="space-y-4">
+        <div className="space-y-4 flex flex-col">
           {likedStations.map(station => (
-            <li
+            <button
               key={station.stationuuid}
-              className={`flex items-center justify-between p-3 rounded-md border ${
-                currentStation?.stationuuid === station.stationuuid
-                  ? 'bg-blue-100 border-blue-400'
-                  : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600'
-              }`}
+              className={`w-full border-b-1 border-[var(--color-border)] flex justify-between items-center ${isPlaying && currentStation?.stationuuid === station.stationuuid ? 'bg-[var(--sidebar-link-color-1)] rounded-sm' : ''}`}
+              onClick={() => handlePlay(station)}
             >
-              <div>
-                <p className="text-lg font-medium">{station.name}</p>
-                <p className="text-sm text-gray-500">{station.language || 'Unknown'}</p>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded"
-                  onClick={() => handlePlay(station)}
+              <div className="flex gap-3 items-center">
+                <span
+                  className={
+                    isPlaying && currentStation?.stationuuid === station.stationuuid
+                      ? 'text-[var(--color-bg-1)] bg-[var(--color-accent)] rounded-full p-2'
+                      : 'border rounded-full p-2'
+                  }
                 >
-                  Play
-                </button>
-                <button
-                  className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-sm rounded"
-                  onClick={() => handleUnlike(station.stationuuid)}
+                  {isPlaying && currentStation?.stationuuid === station.stationuuid ? (
+                    <PauseIcon className="h-6" />
+                  ) : (
+                    <PlayIcon className="h-6" />
+                  )}
+                </span>
+
+                <img
+                  src={imageSrc(station)}
+                  alt="Station"
+                  onError={() => handleImageError(station.stationuuid)}
+                  className="rounded-md h-12 object-cover hidden md:block"
+                />
+
+                <div
+                  className={`text-left flex flex-col ${
+                    isPlaying && currentStation?.stationuuid === station.stationuuid
+                      ? 'text-[var(--color-text-primary)]'
+                      : 'text-[var(--color-text-secondary)]'
+                  }`}
                 >
-                  Unlike
-                </button>
+                  <span className="text-lg font-medium">{station.name}</span>
+                  <span className="text-sm text-[var(--color-text-secondary)]">
+                    {station.language || 'Unknown'}
+                  </span>
+                </div>
               </div>
-            </li>
+
+              <span onClick={() => handleUnlike(station.stationuuid)}>
+                <HeartIcon className="h-10 text-red-500" />
+              </span>
+            </button>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );
