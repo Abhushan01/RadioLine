@@ -1,9 +1,8 @@
-// src/components/Features/MapView.jsx
 import { MapContainer, Marker, TileLayer, Tooltip, GeoJSON } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../../styles/MapView.css';
-import { useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RadioIcon } from '@heroicons/react/24/outline';
 
@@ -27,31 +26,27 @@ const createNumberedIcon = number =>
     popupAnchor: [0, -42],
   });
 
-const MapView = ({ countryList = [], setPreferredCountry, geoJsonData, loading, error }) => {
-  const [prefCount, setPrefCount] = useState(() => {
-    const saved = localStorage.getItem('prefCount');
-    return saved ? JSON.parse(saved) : null;
-  });
-
+const MapView = ({
+  countryList = [],
+  setPreferredCountry,
+  geoJsonData,
+  loading,
+  error,
+  prefCount,
+}) => {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (prefCount) {
-      setPreferredCountry(prefCount);
-    }
-  }, [prefCount, setPreferredCountry]);
+  const handleSelectCountry = useCallback(
+    country => {
+      if (prefCount?.cca2 === country.cca2) return; // Prevent unnecessary updates
 
-  useEffect(() => {
-    if (prefCount) {
-      localStorage.setItem('prefCount', JSON.stringify(prefCount));
-      setPreferredCountry(prefCount); // Notify parent App.jsx
-    }
-  }, [prefCount, setPreferredCountry]);
-
-  const handleSelectCountry = country => {
-    setPrefCount({ name: country.name, cca2: country.cca2 });
-    navigate('/');
-  };
+      const selected = { name: country.name, cca2: country.cca2 };
+      localStorage.setItem('prefCount', JSON.stringify(selected));
+      setPreferredCountry(selected);
+      navigate('/');
+    },
+    [prefCount, setPreferredCountry, navigate]
+  );
 
   const isValidLatLng = latlng =>
     Array.isArray(latlng) &&
@@ -62,7 +57,6 @@ const MapView = ({ countryList = [], setPreferredCountry, geoJsonData, loading, 
     !isNaN(latlng[1]);
 
   const defaultCenter = () => {
-    console.log('pref', prefCount);
     if (!prefCount || !countryList.length) return [20, 0];
     const country = countryList.find(x => x.cca2 === prefCount.cca2);
     return country?.capitalInfo?.latlng ?? [20, 0];
@@ -89,12 +83,14 @@ const MapView = ({ countryList = [], setPreferredCountry, geoJsonData, loading, 
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution="&copy; OpenStreetMap contributors"
         />
+
         {geoJsonData && (
           <GeoJSON
             data={geoJsonData}
             style={{ color: 'teal', weight: 2, fillColor: 'lightcyan', fillOpacity: 0.3 }}
           />
         )}
+
         {countryList.map((country, index) => {
           if (!country.capitalInfo || !isValidLatLng(country.capitalInfo.latlng)) return null;
 
@@ -108,7 +104,7 @@ const MapView = ({ countryList = [], setPreferredCountry, geoJsonData, loading, 
               }}
             >
               <Tooltip permanent={country.name === prefCount?.name}>
-                <div className="min-w-[10rem] max-w-[16rem] text-[var(--color-text-primary)] ">
+                <div className="min-w-[10rem] max-w-[16rem] text-[var(--color-text-primary)]">
                   <p className="text-sm flex justify-between items-center">
                     <span className="font-semibold">{country.name}</span>
                     <span className="flex items-center gap-1">

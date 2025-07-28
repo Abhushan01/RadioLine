@@ -178,7 +178,7 @@ const App = () => {
     };
 
     fetchRadioStations();
-  }, [server, preferedCountry, navigate]);
+  }, [server, preferedCountry]);
 
   // Fetch GeoJSON for preferred country boundaries
   useEffect(() => {
@@ -233,16 +233,22 @@ const App = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {isDiscoverRoute && (
-        <MapView
-          countryList={countryData}
-          loading={countriesLoading || geoJsonLoading}
-          error={countriesError || geoJsonError}
-          setPreferredCountry={setPreferedCountry}
-          geoJsonData={geoJsonData}
-          searchQuery={searchQuery}
+      <Routes>
+        <Route
+          path="/discover"
+          element={
+            <MapView
+              countryList={countryData}
+              loading={countriesLoading || geoJsonLoading}
+              error={countriesError || geoJsonError}
+              setPreferredCountry={setPreferedCountry}
+              geoJsonData={geoJsonData}
+              searchQuery={searchQuery}
+              prefCount={preferedCountry}
+            />
+          }
         />
-      )}
+      </Routes>
       <Navbar
         radioStationList={isDiscoverRoute ? [] : radioStationList}
         countryList={isDiscoverRoute ? countryData : []}
