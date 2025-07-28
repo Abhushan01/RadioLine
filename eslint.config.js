@@ -8,6 +8,9 @@ import globals from 'globals';
 
 export default [
   {
+    ignores: ['dist/**', 'node_modules/**'],
+  },
+  {
     files: ['**/*.jsx', '**/*.js'],
     languageOptions: {
       parser: babelParser,
@@ -16,6 +19,7 @@ export default [
       globals: {
         ...globals.browser,
         ...globals.es2021,
+        L: 'readonly',
       },
     },
     plugins: {

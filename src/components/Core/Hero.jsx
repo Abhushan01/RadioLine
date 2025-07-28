@@ -71,7 +71,7 @@ const Hero = ({ loading, sectionDetails: { preferedCountry, radioStationList, se
       {showAllData?.showAllFlag ? (
         <div className="px-4 mt-4">
           <div className="flex items-center justify-between mb-2">
-            <h2 className="text-2xl font-semibold">All {showAllData?.title} Stations</h2>
+            <h2 className="text-2xl font-semibold">{showAllData?.title} Stations</h2>
             <button
               className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]"
               onClick={() => setShowAllData(null)}

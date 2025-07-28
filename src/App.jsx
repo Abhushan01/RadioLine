@@ -6,7 +6,6 @@ import Navbar from './components/Core/Navbar';
 import Sidebar from './components/Core/Sidebar';
 import CurrentStation from './components/Core/CurrentStation';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
-import DiscoverGlobe from './components/Features/DiscoverGlobe';
 import Search from './components/Features/Search';
 import { useEffect, useState } from 'react';
 import CurrentStationPlaceholder from './components/Placeholder/CurrentStationPlaceholder';
@@ -14,6 +13,7 @@ import FavoriteStations from './components/Features/FavoriteStations';
 import RecentlyPlayed from './components/Features/RecentlyPlayed';
 import Genres from './components/Features/Genres';
 import { useAudio } from './context/AudioPlayer';
+import MapView from './components/Features/MapView';
 
 const fetchWithTimeout = (url, options = {}, timeout = 120000) =>
   new Promise((resolve, reject) => {
@@ -32,7 +32,7 @@ const fetchWithTimeout = (url, options = {}, timeout = 120000) =>
 const App = () => {
   const [server, setServer] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { setError } = useState(null);
+  const [setError] = useState(null);
   const [radioStationList, setRadioStationList] = useState([]);
   const [preferedCountry, setPreferedCountry] = useState(() => {
     const saved = localStorage.getItem('prefCount');
@@ -43,15 +43,20 @@ const App = () => {
   const [countriesLoading, setCountriesLoading] = useState(false);
   const [countriesError, setCountriesError] = useState(false);
 
+  // GeoJSON state
+  const [geoJsonData, setGeoJsonData] = useState(null);
+  const [geoJsonLoading, setGeoJsonLoading] = useState(false);
+  const [geoJsonError, setGeoJsonError] = useState(null);
+
   const { currentStation } = useAudio();
   const isAudioPlaying = useAudio().loading;
   const navigate = useNavigate();
+  const location = useLocation();
+  const isDiscoverRoute = location.pathname === '/discover';
   const [searchQuery, setSearchQuery] = useState(null);
 
   const handleDataFromChild = data => setSearchQuery(data);
 
-  const location = useLocation();
-  const isDiscoverRoute = location.pathname === '/discover';
   // Fetch radio servers
   useEffect(() => {
     const fetchRadioServers = async () => {
@@ -173,10 +178,71 @@ const App = () => {
     };
 
     fetchRadioStations();
-  }, [server, preferedCountry]);
+  }, [server, preferedCountry, navigate]);
+
+  // Fetch GeoJSON for preferred country boundaries
+  useEffect(() => {
+    if (!preferedCountry?.cca2) {
+      setGeoJsonData(null);
+      return;
+    }
+
+    const fetchGeoJson = async () => {
+      setGeoJsonLoading(true);
+      setGeoJsonError(null);
+
+      try {
+        // Nominatim API call for country polygon GeoJSON
+        const apiURL = `https://nominatim.openstreetmap.org/search?q=${preferedCountry.cca2}&format=json&polygon_geojson=1`;
+        const response = await fetchWithTimeout(apiURL, {}, 120000);
+        if (!response.ok) throw new Error('Failed to fetch boundaries');
+
+        const results = await response.json();
+
+        // Filter only Polygon or MultiPolygon geojson types, map to FeatureCollection
+        const polygons = results
+          .filter(
+            item =>
+              item.geojson &&
+              (item.geojson.type === 'Polygon' || item.geojson.type === 'MultiPolygon')
+          )
+          .map(item => ({
+            type: 'Feature',
+            properties: {},
+            geometry: item.geojson,
+          }));
+
+        if (polygons.length === 0) {
+          throw new Error('No polygon boundary data found');
+        }
+
+        setGeoJsonData({
+          type: 'FeatureCollection',
+          features: polygons,
+        });
+      } catch (error) {
+        setGeoJsonError(error.message);
+        setGeoJsonData(null);
+      } finally {
+        setGeoJsonLoading(false);
+      }
+    };
+
+    fetchGeoJson();
+  }, [preferedCountry]);
 
   return (
     <div className="min-h-screen flex flex-col">
+      {isDiscoverRoute && (
+        <MapView
+          countryList={countryData}
+          loading={countriesLoading || geoJsonLoading}
+          error={countriesError || geoJsonError}
+          setPreferredCountry={setPreferedCountry}
+          geoJsonData={geoJsonData}
+          searchQuery={searchQuery}
+        />
+      )}
       <Navbar
         radioStationList={isDiscoverRoute ? [] : radioStationList}
         countryList={isDiscoverRoute ? countryData : []}
@@ -206,18 +272,6 @@ const App = () => {
                       radioStationList,
                       searchQuery,
                     }}
-                  />
-                }
-              />
-              <Route
-                path="/discover"
-                element={
-                  <DiscoverGlobe
-                    countryList={countryData}
-                    loading={countriesLoading}
-                    error={countriesError}
-                    setPreferredCountry={setPreferedCountry}
-                    searchQuery={searchQuery}
                   />
                 }
               />
