@@ -27,7 +27,7 @@ const Card = ({ stationInfo }) => {
   const handlePressEnd = () => setPressed(false);
 
   // Theme-based fallback image
-  const fallbackSrc = theme === 'light' ? '/fallback-image-light.svg' : '/fallback-image.svg';
+  const fallbackSrc = theme === 'light' ? 'fallback-image-light.svg' : 'fallback-image.svg';
 
   const imageSrc =
     !stationInfo.favicon ||

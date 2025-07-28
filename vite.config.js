@@ -4,9 +4,10 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/RadioLine/', // 👈 Important for GitHub Pages
   plugins: [react(), tailwindcss()],
   server: {
-    host: '0.0.0.0', // 👈 This allows access from other devices on your network
-    port: 5173, // Optional: use default or pick any open port
+    host: '0.0.0.0', // Allow access from other devices
+    port: 5173, // Optional: default Vite port
   },
 });

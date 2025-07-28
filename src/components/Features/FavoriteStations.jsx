@@ -30,7 +30,7 @@ const FavoriteStations = () => {
   const [imgErrors, setImgErrors] = useState({});
   const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || 'dark');
 
-  const fallbackSrc = theme === 'light' ? '/fallback-image-light.svg' : '/fallback-image.svg';
+  const fallbackSrc = theme === 'light' ? 'fallback-image-light.svg' : 'fallback-image.svg';
 
   useEffect(() => {
     const observer = new MutationObserver(() => {

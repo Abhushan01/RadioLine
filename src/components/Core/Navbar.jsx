@@ -34,7 +34,7 @@ const Navbar = ({ radioStationList = [], countryList = [], userInput, isDiscover
   }, [mobileSearchActive]);
 
   // Dynamic logo based on theme
-  const brandLogoSrc = theme === 'light' ? '/brand-logo-light.svg' : '/brand-logo.svg';
+  const brandLogoSrc = theme === 'light' ? 'brand-logo-light.svg' : 'brand-logo.svg';
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50">

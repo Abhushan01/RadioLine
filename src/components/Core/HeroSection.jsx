@@ -36,7 +36,7 @@ const HeroSection = ({ preferedCountry, stationCount }) => {
   }, []);
 
   // Theme-based illustration
-  const radioImageSrc = theme === 'light' ? '/radio-light.svg' : '/radio.svg';
+  const radioImageSrc = theme === 'light' ? 'radio-light.svg' : 'radio.svg';
 
   return (
     <div className="glow-wrapper relative overflow-visible">
