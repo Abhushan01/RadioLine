@@ -27,12 +27,17 @@ const createNumberedIcon = (number, theme, zoom = 5) => {
   const scale = Math.max(0.5, Math.min(1.5, zoom / 5)); // Clamp between 0.5 and 1.5
   const size = baseSize * scale;
 
+  // Scale span (label) to match icon size
+  const spanMinWidth = `${Math.round(size)}px`;
+  const fontSize = `${Math.round(12 * scale)}px`; // base font size = 12px
+
   return new L.DivIcon({
     className: 'custom-numbered-icon',
     html: `
       <div style="position: relative; display: flex; flex-direction: column; align-items: center;">
         <img src="${theme === 'light' ? 'map-marker-light.svg' : 'map-marker.svg'}" style="width:${size}px; height:${size}px;" />
-        <span style="background-color: var(--color-navigation-surface); border-radius: 4px; padding: 2px; min-width: 20px; font-size: 0.75rem; text-align: center;">${number}</span>
+        <span class="bg-[var(--color-navigation-surface)] rounded-b-sm p-0.5 text-[${fontSize}] text-center" style="
+          min-width: ${spanMinWidth};">${number}</span>
       </div>
     `,
     iconSize: [size, size + 10],
