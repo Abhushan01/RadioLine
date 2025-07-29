@@ -44,8 +44,7 @@ const Sidebar = ({ mobile = false }) => {
         py-4
         rounded-sm
         fixed
-        lg:w-66
-        md:w-35
+        w-[18%]
         h-full
         z-50
         md:text-sm

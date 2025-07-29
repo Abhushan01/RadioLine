@@ -69,9 +69,7 @@ const Navbar = ({ radioStationList = [], countryList = [], userInput, isDiscover
             {/* Logo + Title (Hidden in search mode) */}
             <div className="flex items-center gap-2 cursor-default">
               <img src={brandLogoSrc} alt="Brand Logo" className="h-8 md:h-auto w-auto" />
-              <span className="text-xl md:text-2xl bg-[radial-gradient(#ffffff_0%,#403B3B_88%)] bg-clip-text text-transparent">
-                RadioLine
-              </span>
+              <span className="text-xl md:text-2xl ">RadioLine</span>
             </div>
 
             {/* Desktop Search */}

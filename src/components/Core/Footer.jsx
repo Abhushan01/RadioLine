@@ -50,7 +50,7 @@ const Footer = () => {
     });
 
     return () => observer.disconnect();
-  }, []);
+  }, [theme]);
 
   useEffect(() => {
     if (currentStation?.stationuuid) {

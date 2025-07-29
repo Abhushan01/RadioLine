@@ -21,7 +21,7 @@ const Card = ({ stationInfo }) => {
     });
 
     return () => observer.disconnect();
-  }, []);
+  }, [theme]);
 
   const handlePressStart = () => setPressed(true);
   const handlePressEnd = () => setPressed(false);

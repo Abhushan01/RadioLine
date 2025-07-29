@@ -44,7 +44,7 @@ const FavoriteStations = () => {
     });
 
     return () => observer.disconnect();
-  }, []);
+  }, [theme]);
 
   const { playStation, currentStation, isPlaying } = useAudio();
 

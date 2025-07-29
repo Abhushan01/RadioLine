@@ -22,7 +22,7 @@ const CurrentStation = () => {
     });
 
     return () => observer.disconnect();
-  }, []);
+  }, [theme]);
 
   const fallbackSrc = theme === 'light' ? 'fallback-image-light.svg' : 'fallback-image.svg';
 
@@ -37,9 +37,9 @@ const CurrentStation = () => {
 
   return (
     <aside
-      className="bg-[var(--color-navigation-section)] backdrop-blur-xl p-4 rounded-sm fixed 
-        lg:w-66
-        md:w-35 z-50 h-full"
+      className="bg-[var(--color-navigation-section)] backdrop-blur-xl  p-4 rounded-sm fixed 
+      w-[18.5%]  
+      z-50 h-full"
     >
       <div>
         <p className="text-md mb-2 font-semibold">

@@ -33,7 +33,7 @@ const HeroSection = ({ preferedCountry, stationCount }) => {
     });
 
     return () => observer.disconnect();
-  }, []);
+  }, [theme]);
 
   // Theme-based illustration
   const radioImageSrc = theme === 'light' ? 'radio-light.svg' : 'radio.svg';
