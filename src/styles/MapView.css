@@ -20,10 +20,21 @@
   z-index: 0 !important;
 }
 
-.leaflet-tooltip {
-  background: var(--color-navigation-section);
+.leaflet-tooltip,
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: var(--color-navigation-surface);
   padding: 4px 8px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(2px);
   border: none;
+}
+
+.leaflet-popup-content {
+  margin: 0.1rem;
+  font-size: inherit;
+}
+
+.leaflet-popup-content p {
+  margin: 1rem 0.1rem 0 0.1rem;
 }

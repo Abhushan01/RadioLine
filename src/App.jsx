@@ -182,7 +182,7 @@ const App = () => {
 
   // Fetch GeoJSON for preferred country boundaries
   useEffect(() => {
-    if (!preferedCountry?.cca2) {
+    if (!preferedCountry?.name) {
       setGeoJsonData(null);
       return;
     }
@@ -193,7 +193,7 @@ const App = () => {
 
       try {
         // Nominatim API call for country polygon GeoJSON
-        const apiURL = `https://nominatim.openstreetmap.org/search?q=${preferedCountry.cca2}&format=json&polygon_geojson=1`;
+        const apiURL = `https://nominatim.openstreetmap.org/search?q=${preferedCountry.name.toLowerCase()}&format=json&polygon_geojson=1`;
         const response = await fetchWithTimeout(apiURL, {}, 120000);
         if (!response.ok) throw new Error('Failed to fetch boundaries');
 
