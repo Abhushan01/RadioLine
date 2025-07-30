@@ -1,4 +1,3 @@
-// src/components/Footer/Footer.jsx
 import { useEffect, useRef, useState } from 'react';
 import { useAudio } from '../../context/AudioPlayer';
 import { useLikedStations } from '../../hooks/useLikedStations';
@@ -15,7 +14,6 @@ import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 
 const Footer = () => {
   const { currentStation, isPlaying, togglePlayPause, setVolume, muteVolume, loading } = useAudio();
-
   const { likeStation, unlikeStation, likedStations } = useLikedStations();
 
   const [volume, setVolState] = useState(0.5);
@@ -42,7 +40,9 @@ const Footer = () => {
 
   useEffect(() => {
     if (nameRef.current && containerRef.current) {
-      const scrollNeeded = nameRef.current.scrollWidth > containerRef.current.offsetWidth;
+      const nameWidth = nameRef.current.scrollWidth;
+      const containerWidth = containerRef.current.offsetWidth;
+      const scrollNeeded = nameWidth > containerWidth;
       setShouldScroll(scrollNeeded);
     }
   }, [currentStation?.name]);
@@ -127,17 +127,16 @@ const Footer = () => {
           className="h-16 w-16 object-contain rounded"
           onError={() => setImgError(true)}
         />
-        <div
-          className="flex flex-col overflow-hidden max-w-[150px] md:max-w-none"
-          ref={containerRef}
-        >
-          <div
-            ref={nameRef}
-            className={`stationName font-semibold text-lg md:text-2xl whitespace-nowrap overflow-hidden relative ${
-              shouldScroll ? 'animate-marquee' : ''
-            }`}
-          >
-            {currentStation.name}
+        <div className="flex flex-col max-w-[150px] md:max-w-none">
+          <div className="animate-marquee-wrapper" ref={containerRef}>
+            <div
+              ref={nameRef}
+              className={`stationName font-semibold text-lg md:text-2xl whitespace-nowrap inline-block ${
+                shouldScroll ? 'animate-marquee' : ''
+              }`}
+            >
+              {currentStation.name}
+            </div>
           </div>
           <div className="stationLanguage text-[var(--color-text-secondary)] text-sm font-light">
             {currentStation.language || 'Unknown'}

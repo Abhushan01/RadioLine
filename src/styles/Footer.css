@@ -40,7 +40,15 @@ footer Button {
   }
 }
 
+.animate-marquee-wrapper {
+  overflow: hidden;
+  position: relative;
+  width: 150px; /* or use max-w-[150px] in Tailwind */
+}
+
 .animate-marquee {
   display: inline-block;
-  animation: marquee 6s linear infinite;
+  white-space: nowrap;
+  animation: marquee 5s linear infinite;
+  will-change: transform;
 }
