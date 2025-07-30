@@ -169,6 +169,11 @@ export const AudioProvider = ({ children }) => {
     audio.volume = value;
   };
 
+  const muteVolume = value => {
+    const audio = audioRef.current;
+    audio.muted = value;
+  };
+
   return (
     <AudioContext.Provider
       value={{
@@ -178,6 +183,7 @@ export const AudioProvider = ({ children }) => {
         isPlaying,
         loading,
         setVolume,
+        muteVolume,
       }}
     >
       {children}

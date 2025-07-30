@@ -9,15 +9,17 @@ import {
   ArrowsPointingOutIcon,
   PlayIcon,
   PauseIcon,
+  SpeakerXMarkIcon,
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 
 const Footer = () => {
-  const { currentStation, isPlaying, togglePlayPause, setVolume, loading } = useAudio();
+  const { currentStation, isPlaying, togglePlayPause, setVolume, muteVolume, loading } = useAudio();
 
   const { likeStation, unlikeStation, likedStations } = useLikedStations();
 
   const [volume, setVolState] = useState(0.5);
+  const [muteFeat, setMuteFeat] = useState(false);
   const [imgError, setImgError] = useState(false);
   const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || 'dark');
   const [liked, setLiked] = useState(false);
@@ -29,6 +31,13 @@ const Footer = () => {
     const newVolume = parseFloat(e.target.value);
     setVolState(newVolume);
     setVolume(newVolume);
+  };
+
+  const handleMuteVolume = () => {
+    setMuteFeat(prev => {
+      muteVolume(!prev);
+      return !prev;
+    });
   };
 
   useEffect(() => {
@@ -167,7 +176,13 @@ const Footer = () => {
             )}
           </button>
           <div className="hidden md:flex items-center gap-3 text-[var(--color-text-secondary)]">
-            <SpeakerWaveIcon className="h-6" />
+            <button onClick={handleMuteVolume} disabled={loading}>
+              {muteFeat ? (
+                <SpeakerXMarkIcon className="h-6" />
+              ) : (
+                <SpeakerWaveIcon className="h-6" />
+              )}
+            </button>
             <input
               type="range"
               min="0"

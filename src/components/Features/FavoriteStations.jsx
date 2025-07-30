@@ -66,7 +66,7 @@ const FavoriteStations = () => {
   };
 
   return (
-    <div className="p-4 bg-[var(--color-navigation-section)] backdrop-blur-xl rounded-sm">
+    <div className="p-4 bg-[var(--color-navigation-section)] backdrop-blur-xl rounded-sm mb-[8rem]">
       <div className="flex justify-between items-center mb-4">
         <p className="font-semibold text-2xl sm:text-4xl">Your Favorites</p>
         {likedStations.length > 0 && (

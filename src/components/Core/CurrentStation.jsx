@@ -9,7 +9,6 @@ const CurrentStation = () => {
   const [imgError, setImgError] = useState(false);
   const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || 'dark');
 
-  // Listen for theme changes
   useEffect(() => {
     const observer = new MutationObserver(() => {
       const newTheme = document.documentElement.dataset.theme || 'dark';
@@ -37,12 +36,16 @@ const CurrentStation = () => {
 
   return (
     <aside
-      className="bg-[var(--color-navigation-section)] backdrop-blur-xl  p-4 rounded-sm fixed 
-      w-[18.5%]  
-      z-50 h-full"
+      className="
+        fixed z-50 
+        w-[18.5%]  
+        h-full 
+        bg-[var(--color-navigation-section)] backdrop-blur-xl 
+        p-4 rounded-sm 
+      "
     >
-      <div>
-        <p className="text-md mb-2 font-semibold">
+      <div className="flex flex-col gap-2">
+        <p className="text-md font-semibold leading-tight">
           <span className="text-[var(--color-text-secondary)] text-sm">Now Playing: </span>
           <span>{currentStation?.name}</span>
         </p>
@@ -51,32 +54,32 @@ const CurrentStation = () => {
           src={imageSrc}
           alt="Station"
           onError={() => setImgError(true)}
-          className="rounded-md w-full h-60 object-cover"
+          className="rounded-md w-full object-cover max-h-48 sm:max-h-60"
         />
 
-        <div className="mt-2 flex items-baseline gap-2 overflow-hidden">
-          <div className="relative w-[180px] overflow-hidden">
-            <div className="marquee whitespace-nowrap font-semibold text-3xl">
+        <div className="flex items-baseline gap-2 overflow-hidden">
+          <div className="relative w-full overflow-hidden max-w-[180px]">
+            <div className="marquee whitespace-nowrap font-semibold text-xl sm:text-2xl">
               {currentStation?.name}
             </div>
           </div>
           {currentStation?.homepage && (
             <a href={currentStation?.homepage} target="_blank" rel="noopener noreferrer">
-              <GlobeAltIcon className="h-6 text-[var(--color-primary)]" />
+              <GlobeAltIcon className="h-5 text-[var(--color-primary)]" />
             </a>
           )}
         </div>
 
-        <hr className="border-[var(--color-border)] mt-3" />
+        <hr className="border-[var(--color-border)] mt-2" />
 
-        <div className="stationDetails mt-2 text-[var(--color-text-secondary)]">
+        <div className="stationDetails mt-1 text-[var(--color-text-secondary)] text-sm flex flex-col gap-1">
           <div className="flex items-center gap-2">
             <LanguageIcon className="h-4" />
             <span>{currentStation?.language || 'Unknown'}</span>
           </div>
           <div className="flex items-center gap-2">
             <MusicalNoteIcon className="h-4" />
-            <span>{currentStation?.tags || 'NA'}</span>
+            <span className="truncate">{currentStation?.tags || 'NA'}</span>
           </div>
           <div className="flex items-center gap-2">
             <CursorArrowRaysIcon className="h-4" />

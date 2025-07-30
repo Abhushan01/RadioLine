@@ -287,7 +287,11 @@ const App = () => {
               <Route
                 path="/genres"
                 element={
-                  <Genres radioStationList={radioStationList} currentStation={currentStation} />
+                  <Genres
+                    radioStationList={radioStationList}
+                    currentStation={currentStation}
+                    loading={loading}
+                  />
                 }
               />
             </Routes>
