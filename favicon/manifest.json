@@ -2,7 +2,7 @@
   "name": "RadioLine",
   "short_name": "RadioLine",
   "description": "All the world at your finger-tip",
-  "start_url": "/",
+  "start_url": "/RadioLine/",
   "display": "standalone",
   "background_color": "#0c0f0a",
   "theme_color": "#ff206e",
@@ -141,6 +141,6 @@
     }
   ],
   "orientation": "portrait",
-  "scope": "/",
+  "scope": "/RadioLine/",
   "lang": "en"
 }
