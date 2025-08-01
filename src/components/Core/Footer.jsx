@@ -9,10 +9,11 @@ import {
   PlayIcon,
   PauseIcon,
   SpeakerXMarkIcon,
+  ArrowsPointingInIcon,
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 
-const Footer = () => {
+const Footer = ({ fullScreenMode, isFullScreen }) => {
   const { currentStation, isPlaying, togglePlayPause, setVolume, muteVolume, loading } = useAudio();
   const { likeStation, unlikeStation, likedStations } = useLikedStations();
 
@@ -128,7 +129,7 @@ const Footer = () => {
           onError={() => setImgError(true)}
         />
         <div className="flex flex-col max-w-[150px] md:max-w-none">
-          <div className="animate-marquee-wrapper" ref={containerRef}>
+          <div className="animate-marquee-wrapper w-[150px]" ref={containerRef}>
             <div
               ref={nameRef}
               className={`stationName font-semibold text-lg md:text-2xl whitespace-nowrap inline-block ${
@@ -148,7 +149,14 @@ const Footer = () => {
 
   return (
     <footer className="fixed left-0 w-full z-50 bottom-10 md:bottom-0">
-      <div className="bg-[var(--color-navigation-section)] backdrop-blur-xl rounded-sm flex justify-between items-center mx-2 md:mx-6 mb-6">
+      <div
+        className="bg-[var(--color-navigation-section)] backdrop-blur-xl rounded-sm flex justify-between items-center mx-2 md:mx-6 mb-6"
+        onClick={() => {
+          if (window.innerWidth < 768) {
+            fullScreenMode();
+          }
+        }}
+      >
         {/* Station Info */}
         <div className="radioStation flex items-center gap-3 cursor-default h-16">
           {renderStationInfo()}
@@ -193,8 +201,16 @@ const Footer = () => {
               style={{ backgroundSize: `${volume * 100}% 100%` }}
               disabled={loading}
             />
-            <button className="hover:text-[var(--color-text-primary)]" disabled={loading}>
-              <ArrowsPointingOutIcon className="h-6" />
+            <button
+              className="hover:text-[var(--color-text-primary)]"
+              disabled={loading}
+              onClick={() => fullScreenMode()}
+            >
+              {isFullScreen ? (
+                <ArrowsPointingInIcon className="h-6" />
+              ) : (
+                <ArrowsPointingOutIcon className="h-6" />
+              )}
             </button>
           </div>
         </div>

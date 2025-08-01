@@ -14,6 +14,7 @@ import RecentlyPlayed from './components/Features/RecentlyPlayed';
 import Genres from './components/Features/Genres';
 import { useAudio } from './context/AudioPlayer';
 import MapView from './components/Features/MapView';
+import FullScreen from './components/Core/FullScreen';
 
 const fetchWithTimeout = (url, options = {}, timeout = 120000) =>
   new Promise((resolve, reject) => {
@@ -54,8 +55,10 @@ const App = () => {
   const location = useLocation();
   const isDiscoverRoute = location.pathname === '/discover';
   const [searchQuery, setSearchQuery] = useState(null);
+  const [fullScreen, setFullScreen] = useState(false);
 
   const handleDataFromChild = data => setSearchQuery(data);
+  const fullScreenMode = () => setFullScreen(value => !value);
 
   // Fetch radio servers
   useEffect(() => {
@@ -231,6 +234,15 @@ const App = () => {
     fetchGeoJson();
   }, [preferedCountry]);
 
+  if (fullScreen) {
+    return (
+      <>
+        {/* {loading, fullScreenMode,fullScreen} */}
+        <FullScreen loading={loading} fullScreen={fullScreen} fullScreenMode={fullScreenMode} />
+      </>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <Routes>
@@ -307,7 +319,7 @@ const App = () => {
       <div className="fixed bottom-0 left-0 w-full block md:hidden z-50">
         <Sidebar mobile />
       </div>
-      <Footer loading={loading} />
+      <Footer loading={loading} fullScreenMode={fullScreenMode} />
     </div>
   );
 };

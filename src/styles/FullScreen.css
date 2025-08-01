@@ -1,0 +1,22 @@
+.header::after {
+  content: '';
+  position: absolute;
+  background: var(--color-primary);
+  height: 50%;
+  width: 100%;
+  z-index: -1;
+}
+
+.header::before {
+  content: '';
+  position: absolute;
+  background: var(--color-accent);
+  height: 60%;
+  width: 100%;
+  z-index: -2;
+  border-radius: 10px;
+}
+
+.header {
+  color: white;
+}

@@ -43,7 +43,6 @@ footer Button {
 .animate-marquee-wrapper {
   overflow: hidden;
   position: relative;
-  width: 150px; /* or use max-w-[150px] in Tailwind */
 }
 
 .animate-marquee {

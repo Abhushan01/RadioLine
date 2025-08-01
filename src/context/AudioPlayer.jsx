@@ -11,12 +11,23 @@ export const AudioProvider = ({ children }) => {
   const hlsRef = useRef(null);
   const retryTimeoutRef = useRef(null);
   const lastActionRef = useRef(''); // 'play' or 'pause'
+  const audioCtxRef = useRef(null);
+  const analyserRef = useRef(null);
+  const sourceRef = useRef(null);
 
   useEffect(() => {
     const audio = new Audio();
     audio.crossOrigin = 'anonymous';
     audio.preload = 'auto';
     audioRef.current = audio;
+
+    audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
+    analyserRef.current = audioCtxRef.current.createAnalyser();
+    analyserRef.current.fftSize = 256;
+
+    sourceRef.current = audioCtxRef.current.createMediaElementSource(audio);
+    sourceRef.current.connect(analyserRef.current);
+    analyserRef.current.connect(audioCtxRef.current.destination);
 
     const onPause = () => {
       console.log('Audio paused. lastAction:', lastActionRef.current);
@@ -184,6 +195,7 @@ export const AudioProvider = ({ children }) => {
         loading,
         setVolume,
         muteVolume,
+        analyserRef,
       }}
     >
       {children}
