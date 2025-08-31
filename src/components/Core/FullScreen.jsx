@@ -17,7 +17,8 @@ import { useLikedStations } from '../../hooks/useLikedStations';
 import '../../styles/FullScreen.css';
 
 const FullScreen = ({ loading, fullScreenMode }) => {
-  const { currentStation, isPlaying, togglePlayPause, setVolume, muteVolume } = useAudio();
+  const { currentStation, isPlaying, togglePlayPause, setVolume, muteVolume, analyserRef } =
+    useAudio();
   const [imgError, setImgError] = useState(false);
   const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || 'dark');
   const [liked, setLiked] = useState(false);
@@ -25,7 +26,8 @@ const FullScreen = ({ loading, fullScreenMode }) => {
 
   const [volume, setVolState] = useState(0.5);
   const [muteFeat, setMuteFeat] = useState(false);
-
+  const canvasRef = useRef(null); // [NEW]
+  const imageCanvasRef = useRef(null);
   const handleVolumeChange = e => {
     const newVolume = parseFloat(e.target.value);
     setVolState(newVolume);
@@ -97,6 +99,141 @@ const FullScreen = ({ loading, fullScreenMode }) => {
       setShouldScroll(scrollNeeded);
     }
   }, [currentStation?.name]);
+  useEffect(() => {
+    if (!analyserRef?.current || !imageCanvasRef.current) return;
+
+    const canvas = imageCanvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const analyser = analyserRef.current;
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    const resizeCanvas = () => {
+      canvas.width = canvas.clientWidth;
+      canvas.height = canvas.clientHeight;
+    };
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    let animationId;
+
+    const draw = () => {
+      animationId = requestAnimationFrame(draw);
+      analyser.getByteTimeDomainData(dataArray);
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const baseRadius = Math.min(centerX, centerY) / 2;
+
+      // MAIN CIRCULAR WAVEFORM
+      ctx.beginPath();
+      ctx.strokeStyle = '#10B981';
+      ctx.lineWidth = 3; // <== Increased stroke width here
+
+      for (let i = 0; i < bufferLength; i++) {
+        const angle = (i / bufferLength) * 2 * Math.PI;
+        const v = dataArray[i] / 255.0;
+        const radius = baseRadius + v * 80;
+        const x = centerX + radius * Math.cos(angle);
+        const y = centerY + radius * Math.sin(angle);
+
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+
+      ctx.closePath();
+      ctx.stroke();
+
+      // OPTIONAL: INNER SPIRAL/MIRRORED LAYER
+      ctx.beginPath();
+      ctx.strokeStyle = 'green';
+      ctx.lineWidth = 2; // Lighter stroke for secondary waveform
+
+      for (let i = 0; i < bufferLength; i++) {
+        const angle = (i / bufferLength) * 4 * Math.PI;
+        const v = dataArray[i] / 255.0;
+        const radius = baseRadius + v * 60;
+        const x = centerX + radius * Math.cos(angle);
+        const y = centerY + radius * Math.sin(angle);
+
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+
+      ctx.closePath();
+      ctx.stroke();
+    };
+
+    draw();
+
+    return () => {
+      cancelAnimationFrame(animationId);
+      window.removeEventListener('resize', resizeCanvas);
+    };
+  }, [analyserRef]);
+
+  useEffect(() => {
+    if (!analyserRef?.current || !canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const analyser = analyserRef.current;
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    const resizeCanvas = () => {
+      canvas.width = canvas.clientWidth;
+      canvas.height = canvas.clientHeight;
+    };
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    let animationId;
+
+    const draw = () => {
+      animationId = requestAnimationFrame(draw);
+      analyser.getByteTimeDomainData(dataArray);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const sliceWidth = canvas.width / bufferLength;
+      const midY = canvas.height / 2;
+
+      // ✅ Styling
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = '#fbff12';
+
+      // === TOP waveform ===
+      ctx.beginPath();
+      let x = 0;
+      for (let i = 0; i < bufferLength; i++) {
+        const v = dataArray[i] / 128.0;
+        const y = midY - (v * midY) / 2;
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        x += sliceWidth;
+      }
+      ctx.stroke();
+
+      // === BOTTOM mirrored waveform ===
+      ctx.beginPath();
+      x = 0;
+      for (let i = 0; i < bufferLength; i++) {
+        const v = dataArray[i] / 128.0;
+        const y = midY + (v * midY) / 2;
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        x += sliceWidth;
+      }
+      ctx.stroke();
+    };
+
+    draw();
+
+    return () => {
+      cancelAnimationFrame(animationId);
+      window.removeEventListener('resize', resizeCanvas);
+    };
+  }, [analyserRef]);
 
   return (
     <div className="h-screen w-screen flex flex-col overflow-hidden">
@@ -124,6 +261,10 @@ const FullScreen = ({ loading, fullScreenMode }) => {
 
         <div className="content flex justify-center md:items-center flex-col">
           <div className="relative flex justify-center items-center h-75 w-full">
+            <canvas
+              ref={imageCanvasRef}
+              className="absolute top-0 left-0 w-full h-full z-0 pointer-events-none"
+            />
             {/* Image on top */}
             <img
               src={imageSrc}
@@ -155,6 +296,10 @@ const FullScreen = ({ loading, fullScreenMode }) => {
           <div className="flex items-center gap- justify-center">
             <LanguageIcon className="h-4" />
             <span>{currentStation?.language || 'Unknown'}</span>
+          </div>
+
+          <div className="hidden md:block w-full px-4 md:px-0 ">
+            <canvas ref={canvasRef} className="w-full h-24 md:h-32 " />
           </div>
         </div>
 

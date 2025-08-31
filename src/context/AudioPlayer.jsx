@@ -10,7 +10,12 @@ export const AudioProvider = ({ children }) => {
   const audioRef = useRef(null);
   const hlsRef = useRef(null);
   const retryTimeoutRef = useRef(null);
-  const lastActionRef = useRef(''); // 'play' or 'pause'
+  const lastActionRef = useRef('');
+
+  const audioContextRef = useRef(null); // [NEW]
+  const analyserRef = useRef(null); // [NEW]
+  const dataArrayRef = useRef(null); // [NEW]
+  const sourceNodeRef = useRef(null); // <-- New
 
   useEffect(() => {
     const audio = new Audio();
@@ -52,7 +57,6 @@ export const AudioProvider = ({ children }) => {
 
   const isM3U8 = url => /\.m3u8($|\?)/i.test(url);
 
-  // Add this helper function to update recent played list in localStorage
   const updateRecentlyPlayed = station => {
     try {
       const stored = JSON.parse(localStorage.getItem('recentlyPlayed')) || [];
@@ -60,10 +64,34 @@ export const AudioProvider = ({ children }) => {
       filtered.unshift(station);
       const recent = filtered.slice(0, 10);
       localStorage.setItem('recentlyPlayed', JSON.stringify(recent));
-      // Optionally, dispatch a custom event to notify other components
       window.dispatchEvent(new Event('recentlyPlayedUpdated'));
     } catch (e) {
       console.error('Failed to update recently played', e);
+    }
+  };
+
+  const setupAnalyser = () => {
+    if (!audioRef.current) return;
+
+    if (!audioContextRef.current) {
+      audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    if (!sourceNodeRef.current) {
+      // ✅ Only create once
+      sourceNodeRef.current = audioContextRef.current.createMediaElementSource(audioRef.current);
+    }
+
+    if (!analyserRef.current) {
+      analyserRef.current = audioContextRef.current.createAnalyser();
+      analyserRef.current.fftSize = 2048;
+
+      const bufferLength = analyserRef.current.frequencyBinCount;
+      dataArrayRef.current = new Uint8Array(bufferLength);
+
+      // ✅ Connect only once
+      sourceNodeRef.current.connect(analyserRef.current);
+      analyserRef.current.connect(audioContextRef.current.destination);
     }
   };
 
@@ -96,6 +124,7 @@ export const AudioProvider = ({ children }) => {
         audio
           .play()
           .then(() => {
+            setupAnalyser(); // [NEW]
             setIsPlaying(true);
             setLoading(false);
           })
@@ -131,6 +160,7 @@ export const AudioProvider = ({ children }) => {
       audio
         .play()
         .then(() => {
+          setupAnalyser(); // [NEW]
           setIsPlaying(true);
           setLoading(false);
         })
@@ -184,6 +214,8 @@ export const AudioProvider = ({ children }) => {
         loading,
         setVolume,
         muteVolume,
+        analyserRef,
+        dataArrayRef,
       }}
     >
       {children}
